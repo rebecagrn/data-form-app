@@ -18,6 +18,7 @@ module.exports = {
           moduleResolution: 'node',
           baseUrl: '.',
           paths: { '@/*': ['src/*'] },
+          types: ['jest', '@testing-library/jest-dom'],
           esModuleInterop: true,
           allowSyntheticDefaultImports: true,
           verbatimModuleSyntax: false,

@@ -1,11 +1,16 @@
 import { create } from 'zustand'
 
+export type SubmitFeedback = {
+  type: 'success' | 'error'
+  message: string
+}
+
 type UiState = {
-  submitMessage: string | null
-  setSubmitMessage: (message: string | null) => void
+  submitFeedback: SubmitFeedback | null
+  setSubmitFeedback: (feedback: SubmitFeedback | null) => void
 }
 
 export const useUiStore = create<UiState>((set) => ({
-  submitMessage: null,
-  setSubmitMessage: (message) => set({ submitMessage: message }),
+  submitFeedback: null,
+  setSubmitFeedback: (feedback) => set({ submitFeedback: feedback }),
 }))

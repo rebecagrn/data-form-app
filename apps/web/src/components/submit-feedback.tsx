@@ -1,3 +1,5 @@
+import { AlertCircle, CheckCircle2 } from 'lucide-react'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { useUiStore } from '@/stores/ui.store'
 
 export function SubmitFeedback() {
@@ -10,16 +12,20 @@ export function SubmitFeedback() {
   const isSuccess = submitFeedback.type === 'success'
 
   return (
-    <div
-      role="alert"
+    <Alert
+      variant={isSuccess ? 'success' : 'destructive'}
       aria-live="polite"
-      className={
-        isSuccess
-          ? 'rounded-md border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-900'
-          : 'rounded-md border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive'
-      }
+      className="transition-all duration-300"
     >
-      {submitFeedback.message}
-    </div>
+      {isSuccess ? (
+        <CheckCircle2 aria-hidden />
+      ) : (
+        <AlertCircle aria-hidden />
+      )}
+      <AlertTitle>
+        {isSuccess ? 'Cadastro concluído' : 'Não foi possível cadastrar'}
+      </AlertTitle>
+      <AlertDescription>{submitFeedback.message}</AlertDescription>
+    </Alert>
   )
 }

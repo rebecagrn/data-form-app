@@ -1,15 +1,22 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
+import { Loader2, Send, Sparkles } from 'lucide-react'
 import { useForm } from 'react-hook-form'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
+import { FavoriteColorField } from '@/components/favorite-color-field'
+import { FormField } from '@/components/form-field'
 import { SubmitFeedback } from '@/components/submit-feedback'
+import { Button } from '@/components/ui/button'
 import {
-  RAINBOW_COLOR_LABELS,
-  RAINBOW_COLORS,
-} from '@/lib/constants/rainbow-colors'
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Separator } from '@/components/ui/separator'
+import { Textarea } from '@/components/ui/textarea'
 import { createClient, getApiErrorMessage } from '@/lib/clients-api'
 import {
   clientFormSchema,
@@ -34,6 +41,7 @@ export function ClientRegistrationForm() {
     handleSubmit,
     reset,
     setValue,
+    control,
     formState: { errors },
   } = useForm<ClientFormValues>({
     resolver: zodResolver(clientFormSchema),
@@ -69,129 +77,145 @@ export function ClientRegistrationForm() {
 
   return (
     <div className="w-full max-w-lg space-y-6">
-      <header className="space-y-1 text-center">
-        <h1 className="text-2xl font-semibold tracking-tight">
-          Cadastro de clientes
-        </h1>
-        <p className="text-muted-foreground text-sm">
-          Preencha os dados abaixo. Cada CPF e e-mail pode ser cadastrado apenas
-          uma vez.
-        </p>
-      </header>
+      <div className="flex flex-col items-center gap-3 text-center">
+        <div className="bg-primary/10 text-primary flex size-12 items-center justify-center rounded-2xl shadow-sm ring-1 ring-primary/15">
+          <Sparkles className="size-6" aria-hidden />
+        </div>
+        <div className="space-y-1">
+          <p className="text-primary text-xs font-semibold uppercase tracking-widest">
+            Data Form App
+          </p>
+          <h1 className="text-foreground text-2xl font-semibold tracking-tight sm:text-3xl">
+            Cadastro de clientes
+          </h1>
+          <p className="text-muted-foreground mx-auto max-w-sm text-sm leading-relaxed">
+            Colete nome, CPF, e-mail e cor preferida. Cada cliente só pode se
+            cadastrar uma vez.
+          </p>
+        </div>
+      </div>
 
       <SubmitFeedback />
 
-      <form
-        onSubmit={handleSubmit(handleFormSubmit)}
-        className="space-y-4 rounded-lg border bg-card p-6 shadow-sm"
-        noValidate
-      >
-        <div className="space-y-2">
-          <Label htmlFor="fullName">Nome completo</Label>
-          <Input
-            id="fullName"
-            autoComplete="name"
-            aria-invalid={Boolean(errors.fullName)}
-            aria-describedby={errors.fullName ? 'fullName-error' : undefined}
-            {...register('fullName')}
-          />
-          {errors.fullName && (
-            <p id="fullName-error" className="text-destructive text-sm">
-              {errors.fullName.message}
-            </p>
-          )}
-        </div>
+      <Card className="border-border/60 bg-card/80 shadow-lg shadow-primary/5 backdrop-blur-sm">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-lg">Dados do cliente</CardTitle>
+          <CardDescription>
+            Campos obrigatórios marcados pelo formulário. Revise antes de enviar.
+          </CardDescription>
+        </CardHeader>
+        <Separator className="opacity-60" />
+        <form onSubmit={handleSubmit(handleFormSubmit)} noValidate>
+          <CardContent className="space-y-5 pt-6">
+            <FormField
+              id="fullName"
+              label="Nome completo"
+              error={errors.fullName?.message}
+            >
+              <Input
+                id="fullName"
+                autoComplete="name"
+                placeholder="Ex.: Maria Silva"
+                className="h-10 bg-background/80"
+                aria-invalid={Boolean(errors.fullName)}
+                aria-describedby={
+                  errors.fullName ? 'fullName-error' : undefined
+                }
+                {...register('fullName')}
+              />
+            </FormField>
 
-        <div className="space-y-2">
-          <Label htmlFor="cpf">CPF</Label>
-          <Input
-            id="cpf"
-            inputMode="numeric"
-            autoComplete="off"
-            placeholder="000.000.000-00"
-            aria-invalid={Boolean(errors.cpf)}
-            aria-describedby={errors.cpf ? 'cpf-error' : undefined}
-            {...register('cpf', {
-              onChange: (event) => {
-                setValue('cpf', formatCpf(event.target.value), {
-                  shouldValidate: true,
-                })
-              },
-            })}
-          />
-          {errors.cpf && (
-            <p id="cpf-error" className="text-destructive text-sm">
-              {errors.cpf.message}
-            </p>
-          )}
-        </div>
+            <div className="grid gap-5 sm:grid-cols-2">
+              <FormField
+                id="cpf"
+                label="CPF"
+                hint="Somente números; formatamos automaticamente."
+                error={errors.cpf?.message}
+              >
+                <Input
+                  id="cpf"
+                  inputMode="numeric"
+                  autoComplete="off"
+                  placeholder="000.000.000-00"
+                  className="h-10 bg-background/80 font-mono tracking-wide"
+                  aria-invalid={Boolean(errors.cpf)}
+                  aria-describedby={errors.cpf ? 'cpf-error' : undefined}
+                  {...register('cpf', {
+                    onChange: (event) => {
+                      setValue('cpf', formatCpf(event.target.value), {
+                        shouldValidate: true,
+                      })
+                    },
+                  })}
+                />
+              </FormField>
 
-        <div className="space-y-2">
-          <Label htmlFor="email">E-mail</Label>
-          <Input
-            id="email"
-            type="email"
-            autoComplete="email"
-            aria-invalid={Boolean(errors.email)}
-            aria-describedby={errors.email ? 'email-error' : undefined}
-            {...register('email')}
-          />
-          {errors.email && (
-            <p id="email-error" className="text-destructive text-sm">
-              {errors.email.message}
-            </p>
-          )}
-        </div>
+              <FormField
+                id="email"
+                label="E-mail"
+                error={errors.email?.message}
+              >
+                <Input
+                  id="email"
+                  type="email"
+                  autoComplete="email"
+                  placeholder="cliente@email.com"
+                  className="h-10 bg-background/80"
+                  aria-invalid={Boolean(errors.email)}
+                  aria-describedby={errors.email ? 'email-error' : undefined}
+                  {...register('email')}
+                />
+              </FormField>
+            </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="favoriteColor">Cor preferida</Label>
-          <select
-            id="favoriteColor"
-            className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            aria-invalid={Boolean(errors.favoriteColor)}
-            aria-describedby={
-              errors.favoriteColor ? 'favoriteColor-error' : undefined
-            }
-            {...register('favoriteColor')}
-          >
-            {RAINBOW_COLORS.map((color) => (
-              <option key={color} value={color}>
-                {RAINBOW_COLOR_LABELS[color]}
-              </option>
-            ))}
-          </select>
-          {errors.favoriteColor && (
-            <p id="favoriteColor-error" className="text-destructive text-sm">
-              {errors.favoriteColor.message}
-            </p>
-          )}
-        </div>
+            <FavoriteColorField
+              control={control}
+              error={errors.favoriteColor}
+            />
 
-        <div className="space-y-2">
-          <Label htmlFor="notes">Observações (opcional)</Label>
-          <Textarea
-            id="notes"
-            rows={4}
-            aria-invalid={Boolean(errors.notes)}
-            aria-describedby={errors.notes ? 'notes-error' : undefined}
-            {...register('notes')}
-          />
-          {errors.notes && (
-            <p id="notes-error" className="text-destructive text-sm">
-              {errors.notes.message}
+            <FormField
+              id="notes"
+              label="Observações"
+              hint="Opcional — contexto do negócio ou preferências."
+              error={errors.notes?.message}
+            >
+              <Textarea
+                id="notes"
+                rows={3}
+                placeholder="Ex.: cliente indicado, horário preferido de contato..."
+                className="resize-none bg-background/80"
+                aria-invalid={Boolean(errors.notes)}
+                aria-describedby={errors.notes ? 'notes-error' : undefined}
+                {...register('notes')}
+              />
+            </FormField>
+          </CardContent>
+          <CardFooter className="flex-col gap-3 border-t border-border/60 bg-muted/30 pt-6">
+            <Button
+              type="submit"
+              size="lg"
+              className="h-11 w-full shadow-md"
+              disabled={mutation.isPending}
+              aria-busy={mutation.isPending}
+            >
+              {mutation.isPending ? (
+                <>
+                  <Loader2 className="animate-spin" aria-hidden />
+                  Enviando...
+                </>
+              ) : (
+                <>
+                  <Send aria-hidden />
+                  Enviar cadastro
+                </>
+              )}
+            </Button>
+            <p className="text-muted-foreground text-center text-xs">
+              Ao enviar, você confirma que os dados estão corretos.
             </p>
-          )}
-        </div>
-
-        <Button
-          type="submit"
-          className="w-full"
-          disabled={mutation.isPending}
-          aria-busy={mutation.isPending}
-        >
-          {mutation.isPending ? 'Enviando...' : 'Enviar cadastro'}
-        </Button>
-      </form>
+          </CardFooter>
+        </form>
+      </Card>
     </div>
   )
 }

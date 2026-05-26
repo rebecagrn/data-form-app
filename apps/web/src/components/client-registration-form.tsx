@@ -4,7 +4,6 @@ import { Loader2, Send, Sparkles } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { FavoriteColorField } from '@/components/favorite-color-field'
 import { FormField } from '@/components/form-field'
-import { SubmitFeedback } from '@/components/submit-feedback'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -19,11 +18,14 @@ import { Separator } from '@/components/ui/separator'
 import { Textarea } from '@/components/ui/textarea'
 import { createClient, getApiErrorMessage } from '@/lib/clients-api'
 import {
+  showSubmitErrorToast,
+  showSubmitSuccessToast,
+} from '@/lib/show-submit-toast'
+import {
   clientFormSchema,
   type ClientFormValues,
 } from '@/lib/schemas/client-form.schema'
 import { formatCpf } from '@/lib/validators/cpf'
-import { useUiStore } from '@/stores/ui.store'
 
 const defaultValues: ClientFormValues = {
   fullName: '',
@@ -34,8 +36,6 @@ const defaultValues: ClientFormValues = {
 }
 
 export function ClientRegistrationForm() {
-  const setSubmitFeedback = useUiStore((state) => state.setSubmitFeedback)
-
   const {
     register,
     handleSubmit,
@@ -52,21 +52,14 @@ export function ClientRegistrationForm() {
     mutationFn: (payload: ClientFormValues) => createClient(payload),
     onSuccess: () => {
       reset(defaultValues)
-      setSubmitFeedback({
-        type: 'success',
-        message: 'Cadastro realizado com sucesso!',
-      })
+      showSubmitSuccessToast()
     },
     onError: (error) => {
-      setSubmitFeedback({
-        type: 'error',
-        message: getApiErrorMessage(error),
-      })
+      showSubmitErrorToast(getApiErrorMessage(error))
     },
   })
 
   const handleFormSubmit = (values: ClientFormValues) => {
-    setSubmitFeedback(null)
     const trimmedNotes = values.notes?.trim()
     mutation.mutate({
       ...values,
@@ -90,8 +83,6 @@ export function ClientRegistrationForm() {
           </h1>
         </div>
       </div>
-
-      <SubmitFeedback />
 
       <Card className="border-border bg-card shadow-xl shadow-primary/5 dark:shadow-black/30">
         <CardHeader className="pb-2">

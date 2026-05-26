@@ -2,8 +2,8 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { ClientRegistrationForm } from '@/components/client-registration-form'
+import { Toaster } from '@/components/ui/sonner'
 import { createClient } from '@/lib/clients-api'
-import { useUiStore } from '@/stores/ui.store'
 
 jest.mock('@/lib/clients-api', () => ({
   createClient: jest.fn(),
@@ -21,13 +21,13 @@ const renderForm = () => {
   return render(
     <QueryClientProvider client={queryClient}>
       <ClientRegistrationForm />
+      <Toaster />
     </QueryClientProvider>,
   )
 }
 
 describe('ClientRegistrationForm', () => {
   beforeEach(() => {
-    useUiStore.setState({ submitFeedback: null })
     mockedCreateClient.mockReset()
   })
 

@@ -21,6 +21,9 @@ export const getApiErrorMessage = (error: unknown): string => {
     return responseMessage.join('. ')
   }
   if (typeof responseMessage === 'string') {
+    if (responseMessage.includes('already registered')) {
+      return 'Este CPF ou e-mail já está cadastrado.'
+    }
     return responseMessage
   }
   if (error.response?.status === 409) {

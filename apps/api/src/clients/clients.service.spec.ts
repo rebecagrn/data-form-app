@@ -1,10 +1,10 @@
 import { ConflictException } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { QueryFailedError, Repository } from 'typeorm';
+import { QueryFailedError, type Repository } from 'typeorm';
 import { ClientsService } from './clients.service';
+import type { CreateClientDto } from './dto/create-client.dto';
 import { Client } from './entities/client.entity';
-import { CreateClientDto } from './dto/create-client.dto';
 
 describe('ClientsService', () => {
   let service: ClientsService;
@@ -59,14 +59,10 @@ describe('ClientsService', () => {
   });
 
   it('should throw conflict when CPF or email already exists', async () => {
-    const duplicateError = new QueryFailedError(
-      'INSERT',
-      [],
-      new Error('duplicate key'),
-    );
-    (
-      duplicateError as QueryFailedError & { driverError: { code: string } }
-    ).driverError = { code: '23505' };
+    const duplicateError = new QueryFailedError('INSERT', [], new Error('duplicate key'));
+    (duplicateError as QueryFailedError & { driverError: { code: string } }).driverError = {
+      code: '23505',
+    };
     repository.save.mockRejectedValueOnce(duplicateError);
     await expect(service.create(inputDto)).rejects.toThrow(ConflictException);
   });

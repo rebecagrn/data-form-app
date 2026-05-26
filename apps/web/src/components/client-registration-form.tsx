@@ -17,14 +17,8 @@ import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
 import { Textarea } from '@/components/ui/textarea'
 import { createClient, getApiErrorMessage } from '@/lib/clients-api'
-import {
-  showSubmitErrorToast,
-  showSubmitSuccessToast,
-} from '@/lib/show-submit-toast'
-import {
-  clientFormSchema,
-  type ClientFormValues,
-} from '@/lib/schemas/client-form.schema'
+import { type ClientFormValues, clientFormSchema } from '@/lib/schemas/client-form.schema'
+import { showSubmitErrorToast, showSubmitSuccessToast } from '@/lib/show-submit-toast'
 import { formatCpf } from '@/lib/validators/cpf'
 
 const defaultValues: ClientFormValues = {
@@ -88,8 +82,7 @@ export function ClientRegistrationForm() {
         <CardHeader className="pb-2">
           <CardTitle className="text-lg">Dados do cliente</CardTitle>
           <CardDescription>
-            Passe o mouse no ícone de informação para ver como preencher cada
-            campo.
+            Passe o mouse no ícone de informação para ver como preencher cada campo.
           </CardDescription>
         </CardHeader>
         <Separator />
@@ -107,9 +100,7 @@ export function ClientRegistrationForm() {
                 placeholder="Ex.: Maria Silva"
                 className="h-10"
                 aria-invalid={Boolean(errors.fullName)}
-                aria-describedby={
-                  errors.fullName ? 'fullName-error' : undefined
-                }
+                aria-describedby={errors.fullName ? 'fullName-error' : undefined}
                 {...register('fullName')}
               />
             </FormField>
@@ -158,10 +149,7 @@ export function ClientRegistrationForm() {
               </FormField>
             </div>
 
-            <FavoriteColorField
-              control={control}
-              error={errors.favoriteColor}
-            />
+            <FavoriteColorField control={control} error={errors.favoriteColor} />
 
             <FormField
               id="notes"

@@ -24,9 +24,7 @@ function App() {
         <ClientRegistrationForm />
       </main>
 
-      <footer className="text-muted-foreground pb-6 text-center text-xs">
-        Data Form App
-      </footer>
+      <footer className="text-muted-foreground pb-6 text-center text-xs">Data Form App</footer>
     </div>
   )
 }

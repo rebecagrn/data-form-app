@@ -24,8 +24,8 @@ import { Client } from './clients/entities/client.entity';
         database: configService.get<string>('DATABASE_NAME', 'dataform'),
         entities: [Client],
         synchronize:
-          configService.get<string>('TYPEORM_SYNCHRONIZE', 'false') ===
-            'true' || configService.get<string>('NODE_ENV') !== 'production',
+          configService.get<string>('TYPEORM_SYNCHRONIZE', 'false') === 'true' ||
+          configService.get<string>('NODE_ENV') !== 'production',
       }),
     }),
     ClientsModule,

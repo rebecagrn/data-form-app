@@ -10,9 +10,7 @@ jest.mock('@/lib/clients-api', () => ({
   getApiErrorMessage: jest.fn(() => 'Erro da API'),
 }))
 
-const mockedCreateClient = createClient as jest.MockedFunction<
-  typeof createClient
->
+const mockedCreateClient = createClient as jest.MockedFunction<typeof createClient>
 
 const renderForm = () => {
   const queryClient = new QueryClient({
@@ -67,8 +65,6 @@ describe('ClientRegistrationForm', () => {
         }),
       )
     })
-    expect(
-      await screen.findByText('Cadastro realizado com sucesso!'),
-    ).toBeInTheDocument()
+    expect(await screen.findByText('Cadastro realizado com sucesso!')).toBeInTheDocument()
   })
 })

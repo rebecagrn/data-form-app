@@ -1,13 +1,9 @@
-import {
-  ConflictException,
-  INestApplication,
-  ValidationPipe,
-} from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { type INestApplication, ValidationPipe } from '@nestjs/common';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { QueryFailedError } from 'typeorm';
 import request from 'supertest';
-import { App } from 'supertest/types';
+import type { App } from 'supertest/types';
+import { QueryFailedError } from 'typeorm';
 import { ClientsController } from '../src/clients/clients.controller';
 import { ClientsService } from '../src/clients/clients.service';
 import { Client } from '../src/clients/entities/client.entity';
@@ -84,14 +80,10 @@ describe('Clients (e2e)', () => {
   it('POST /api/clients should return 409 for duplicate CPF', async () => {
     mockRepository.create.mockImplementation((payload) => payload);
 
-    const duplicateError = new QueryFailedError(
-      'INSERT',
-      [],
-      new Error('duplicate key'),
-    );
-    (
-      duplicateError as QueryFailedError & { driverError: { code: string } }
-    ).driverError = { code: '23505' };
+    const duplicateError = new QueryFailedError('INSERT', [], new Error('duplicate key'));
+    (duplicateError as QueryFailedError & { driverError: { code: string } }).driverError = {
+      code: '23505',
+    };
     mockRepository.save.mockRejectedValueOnce(duplicateError);
 
     await request(app.getHttpServer())

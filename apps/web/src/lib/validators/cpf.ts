@@ -1,7 +1,6 @@
 const CPF_LENGTH = 11
 
-const isRepeatedDigits = (digits: string): boolean =>
-  /^(\d)\1+$/.test(digits)
+const isRepeatedDigits = (digits: string): boolean => /^(\d)\1+$/.test(digits)
 
 const calculateCheckDigit = (digits: string, factor: number): number => {
   let sum = 0

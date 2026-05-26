@@ -8,10 +8,7 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
-import {
-  RAINBOW_COLORS,
-  type RainbowColor,
-} from '../../common/constants/rainbow-colors.constant';
+import { RAINBOW_COLORS, type RainbowColor } from '../../common/constants/rainbow-colors.constant';
 import { IsCpf } from '../../common/validators/is-cpf.validator';
 
 export class CreateClientDto {
@@ -25,16 +22,12 @@ export class CreateClientDto {
   @IsString()
   @IsNotEmpty()
   @IsCpf()
-  @Transform(({ value }) =>
-    typeof value === 'string' ? value.replace(/\D/g, '') : value,
-  )
+  @Transform(({ value }) => (typeof value === 'string' ? value.replace(/\D/g, '') : value))
   cpf!: string;
 
   @IsEmail()
   @MaxLength(255)
-  @Transform(({ value }) =>
-    typeof value === 'string' ? value.trim().toLowerCase() : value,
-  )
+  @Transform(({ value }) => (typeof value === 'string' ? value.trim().toLowerCase() : value))
   email!: string;
 
   @IsString()

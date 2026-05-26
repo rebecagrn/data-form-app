@@ -1,7 +1,7 @@
-import { INestApplication } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import type { INestApplication } from '@nestjs/common';
+import { Test, type TestingModule } from '@nestjs/testing';
 import request from 'supertest';
-import { App } from 'supertest/types';
+import type { App } from 'supertest/types';
 import { AppController } from '../src/app.controller';
 import { AppService } from '../src/app.service';
 
@@ -32,9 +32,6 @@ describe('Health (e2e)', () => {
   });
 
   it('/api/health (GET)', () => {
-    return request(app.getHttpServer())
-      .get('/api/health')
-      .expect(200)
-      .expect({ status: 'ok' });
+    return request(app.getHttpServer()).get('/api/health').expect(200).expect({ status: 'ok' });
   });
 });

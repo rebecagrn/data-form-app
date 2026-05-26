@@ -39,6 +39,7 @@ Repositório: https://github.com/rebecagrn/data-form-app
 |------------|-----|
 | [Docker](https://www.docker.com/) + [Docker Compose](https://docs.docker.com/compose/) | Postgres, API, Web (nginx) |
 | npm workspaces | Monorepo (`apps/api`, `apps/web`) |
+| [Biome](https://biomejs.dev/) | Lint, format e organize imports (substitui ESLint + Prettier) |
 
 ---
 
@@ -244,7 +245,9 @@ curl -X POST http://localhost:3000/api/clients \
 | `npm run dev:web` | Vite dev server |
 | `npm run build` | Build de API e Web |
 | `npm run test` | Testes em todos os workspaces |
-| `npm run lint` | ESLint nos workspaces |
+| `npm run lint` | Biome (lint + format check) |
+| `npm run lint:fix` | Biome com correções automáticas |
+| `npm run format` | Formata arquivos com Biome |
 | `npm run docker:up` | Compose: build + up |
 | `npm run docker:down` | Para containers |
 | `npm run docker:logs` | Logs do Compose |
@@ -253,6 +256,18 @@ Testes e2e da API:
 
 ```bash
 npm run test:e2e -w @data-form/api
+```
+
+---
+
+## Lint e formatação (Biome)
+
+Configuração central em [`biome.json`](./biome.json). No VS Code/Cursor, instale a extensão **Biome** (`biomejs.biome`); o repositório recomenda format-on-save em [`.vscode/settings.json`](./.vscode/settings.json).
+
+```bash
+npm run lint        # verifica lint + formatação
+npm run lint:fix    # corrige automaticamente
+npm run format      # só formata
 ```
 
 ---

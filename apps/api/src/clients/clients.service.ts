@@ -1,8 +1,8 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { QueryFailedError, Repository } from 'typeorm';
-import { CreateClientDto } from './dto/create-client.dto';
+import { QueryFailedError, type Repository } from 'typeorm';
 import { ClientResponseDto } from './dto/client-response.dto';
+import type { CreateClientDto } from './dto/create-client.dto';
 import { Client } from './entities/client.entity';
 
 const POSTGRES_UNIQUE_VIOLATION = '23505';
@@ -28,9 +28,7 @@ export class ClientsService {
       return ClientResponseDto.fromEntity(saved);
     } catch (error) {
       if (this.isUniqueViolation(error)) {
-        throw new ConflictException(
-          'A client with this CPF or email is already registered',
-        );
+        throw new ConflictException('A client with this CPF or email is already registered');
       }
       throw error;
     }
@@ -41,10 +39,7 @@ export class ClientsService {
       return false;
     }
     const driverError = error.driverError as { code?: string };
-    const code =
-      driverError?.code ?? (error as QueryFailedError & { code?: string }).code;
-    return (
-      code === POSTGRES_UNIQUE_VIOLATION || code === SQLITE_UNIQUE_VIOLATION
-    );
+    const code = driverError?.code ?? (error as QueryFailedError & { code?: string }).code;
+    return code === POSTGRES_UNIQUE_VIOLATION || code === SQLITE_UNIQUE_VIOLATION;
   }
 }

@@ -1,13 +1,8 @@
 import { isAxiosError } from 'axios'
 import { api } from '@/lib/api'
-import type {
-  ClientResponse,
-  CreateClientPayload,
-} from '@/lib/schemas/client-form.schema'
+import type { ClientResponse, CreateClientPayload } from '@/lib/schemas/client-form.schema'
 
-export const createClient = async (
-  payload: CreateClientPayload,
-): Promise<ClientResponse> => {
+export const createClient = async (payload: CreateClientPayload): Promise<ClientResponse> => {
   const { data } = await api.post<ClientResponse>('/clients', payload)
   return data
 }

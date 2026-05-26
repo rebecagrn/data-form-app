@@ -12,14 +12,7 @@ type FormFieldProps = {
   className?: string
 }
 
-export function FormField({
-  id,
-  label,
-  tip,
-  error,
-  children,
-  className,
-}: FormFieldProps) {
+export function FormField({ id, label, tip, error, children, className }: FormFieldProps) {
   return (
     <div className={cn('space-y-2', className)}>
       <div className="flex items-center gap-1.5">

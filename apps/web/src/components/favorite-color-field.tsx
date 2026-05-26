@@ -1,14 +1,14 @@
-import { Controller, type Control, type FieldError } from 'react-hook-form'
 import { Check } from 'lucide-react'
+import { type Control, Controller, type FieldError } from 'react-hook-form'
 import { FieldHint } from '@/components/field-hint'
 import { Label } from '@/components/ui/label'
-import { cn } from '@/lib/utils'
 import {
   RAINBOW_COLOR_LABELS,
   RAINBOW_COLOR_SWATCHES,
   RAINBOW_COLORS,
 } from '@/lib/constants/rainbow-colors'
 import type { ClientFormValues } from '@/lib/schemas/client-form.schema'
+import { cn } from '@/lib/utils'
 
 type FavoriteColorFieldProps = {
   control: Control<ClientFormValues>
@@ -38,6 +38,7 @@ export function FavoriteColorField({ control, error }: FavoriteColorFieldProps) 
             {RAINBOW_COLORS.map((color) => {
               const isSelected = field.value === color
               return (
+                // biome-ignore lint/a11y/useSemanticElements: custom color swatch radio group
                 <button
                   key={color}
                   type="button"

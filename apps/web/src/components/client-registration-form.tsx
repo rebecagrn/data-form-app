@@ -78,7 +78,7 @@ export function ClientRegistrationForm() {
   return (
     <div className="w-full max-w-lg space-y-6">
       <div className="flex flex-col items-center gap-3 text-center">
-        <div className="bg-primary/10 text-primary flex size-12 items-center justify-center rounded-2xl shadow-sm ring-1 ring-primary/15">
+        <div className="bg-primary/15 text-primary ring-primary/25 flex size-12 items-center justify-center rounded-2xl shadow-md ring-1">
           <Sparkles className="size-6" aria-hidden />
         </div>
         <div className="space-y-1">
@@ -88,35 +88,33 @@ export function ClientRegistrationForm() {
           <h1 className="text-foreground text-2xl font-semibold tracking-tight sm:text-3xl">
             Cadastro de clientes
           </h1>
-          <p className="text-muted-foreground mx-auto max-w-sm text-sm leading-relaxed">
-            Colete nome, CPF, e-mail e cor preferida. Cada cliente só pode se
-            cadastrar uma vez.
-          </p>
         </div>
       </div>
 
       <SubmitFeedback />
 
-      <Card className="border-border/60 bg-card/80 shadow-lg shadow-primary/5 backdrop-blur-sm">
+      <Card className="border-border bg-card shadow-xl shadow-primary/5 dark:shadow-black/30">
         <CardHeader className="pb-2">
           <CardTitle className="text-lg">Dados do cliente</CardTitle>
           <CardDescription>
-            Campos obrigatórios marcados pelo formulário. Revise antes de enviar.
+            Passe o mouse no ícone de informação para ver como preencher cada
+            campo.
           </CardDescription>
         </CardHeader>
-        <Separator className="opacity-60" />
+        <Separator />
         <form onSubmit={handleSubmit(handleFormSubmit)} noValidate>
           <CardContent className="space-y-5 pt-6">
             <FormField
               id="fullName"
               label="Nome completo"
+              tip="Informe nome e sobrenome, como no documento."
               error={errors.fullName?.message}
             >
               <Input
                 id="fullName"
                 autoComplete="name"
                 placeholder="Ex.: Maria Silva"
-                className="h-10 bg-background/80"
+                className="h-10"
                 aria-invalid={Boolean(errors.fullName)}
                 aria-describedby={
                   errors.fullName ? 'fullName-error' : undefined
@@ -129,7 +127,7 @@ export function ClientRegistrationForm() {
               <FormField
                 id="cpf"
                 label="CPF"
-                hint="Somente números; formatamos automaticamente."
+                tip="Digite os 11 dígitos; a máscara é aplicada automaticamente."
                 error={errors.cpf?.message}
               >
                 <Input
@@ -137,7 +135,7 @@ export function ClientRegistrationForm() {
                   inputMode="numeric"
                   autoComplete="off"
                   placeholder="000.000.000-00"
-                  className="h-10 bg-background/80 font-mono tracking-wide"
+                  className="h-10 font-mono tracking-wide"
                   aria-invalid={Boolean(errors.cpf)}
                   aria-describedby={errors.cpf ? 'cpf-error' : undefined}
                   {...register('cpf', {
@@ -153,6 +151,7 @@ export function ClientRegistrationForm() {
               <FormField
                 id="email"
                 label="E-mail"
+                tip="Use um e-mail válido para contato com o cliente."
                 error={errors.email?.message}
               >
                 <Input
@@ -160,7 +159,7 @@ export function ClientRegistrationForm() {
                   type="email"
                   autoComplete="email"
                   placeholder="cliente@email.com"
-                  className="h-10 bg-background/80"
+                  className="h-10"
                   aria-invalid={Boolean(errors.email)}
                   aria-describedby={errors.email ? 'email-error' : undefined}
                   {...register('email')}
@@ -176,21 +175,21 @@ export function ClientRegistrationForm() {
             <FormField
               id="notes"
               label="Observações"
-              hint="Opcional — contexto do negócio ou preferências."
+              tip="Opcional. Ex.: cliente indicado ou preferência de contato."
               error={errors.notes?.message}
             >
               <Textarea
                 id="notes"
                 rows={3}
                 placeholder="Ex.: cliente indicado, horário preferido de contato..."
-                className="resize-none bg-background/80"
+                className="resize-none"
                 aria-invalid={Boolean(errors.notes)}
                 aria-describedby={errors.notes ? 'notes-error' : undefined}
                 {...register('notes')}
               />
             </FormField>
           </CardContent>
-          <CardFooter className="flex-col gap-3 border-t border-border/60 bg-muted/30 pt-6">
+          <CardFooter className="flex-col gap-3 border-t bg-muted/40 pt-6">
             <Button
               type="submit"
               size="lg"

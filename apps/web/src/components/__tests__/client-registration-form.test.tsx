@@ -54,7 +54,7 @@ describe('ClientRegistrationForm', () => {
     renderForm()
     await user.type(screen.getByLabelText(/nome completo/i), 'John Doe')
     await user.type(screen.getByLabelText(/^cpf$/i), '52998224725')
-    await user.type(screen.getByLabelText(/e-mail/i), 'john@example.com')
+    await user.type(screen.getByPlaceholderText('cliente@email.com'), 'john@example.com')
     await user.click(screen.getByRole('button', { name: /enviar cadastro/i }))
     await waitFor(() => {
       expect(mockedCreateClient).toHaveBeenCalledWith(

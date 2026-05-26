@@ -1,5 +1,6 @@
 import { Controller, type Control, type FieldError } from 'react-hook-form'
 import { Check } from 'lucide-react'
+import { FieldHint } from '@/components/field-hint'
 import { Label } from '@/components/ui/label'
 import { cn } from '@/lib/utils'
 import {
@@ -17,7 +18,12 @@ type FavoriteColorFieldProps = {
 export function FavoriteColorField({ control, error }: FavoriteColorFieldProps) {
   return (
     <div className="space-y-3">
-      <Label id="favoriteColor-label">Cor preferida</Label>
+      <div className="flex items-center gap-1.5">
+        <Label id="favoriteColor-label" className="text-foreground text-sm font-medium">
+          Cor preferida
+        </Label>
+        <FieldHint tip="Escolha uma cor do arco-íris para o perfil do cliente." />
+      </div>
       <Controller
         name="favoriteColor"
         control={control}
@@ -40,15 +46,15 @@ export function FavoriteColorField({ control, error }: FavoriteColorFieldProps) 
                   aria-label={RAINBOW_COLOR_LABELS[color]}
                   onClick={() => field.onChange(color)}
                   className={cn(
-                    'group relative flex flex-col items-center gap-1.5 rounded-lg border p-2 transition-all',
-                    'hover:border-primary/40 hover:bg-accent/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+                    'group relative flex cursor-pointer flex-col items-center gap-1.5 rounded-lg border p-2 transition-all',
+                    'hover:border-primary/50 hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
                     isSelected
-                      ? 'border-primary bg-primary/5 shadow-sm ring-1 ring-primary/20'
-                      : 'border-border bg-background',
+                      ? 'border-primary bg-primary/10 shadow-sm ring-1 ring-primary/30'
+                      : 'border-border bg-input/60',
                   )}
                 >
                   <span
-                    className="relative flex size-8 items-center justify-center rounded-full shadow-inner ring-1 ring-black/10"
+                    className="relative flex size-8 items-center justify-center rounded-full shadow-inner ring-1 ring-black/15 dark:ring-white/15"
                     style={{ backgroundColor: RAINBOW_COLOR_SWATCHES[color] }}
                   >
                     {isSelected && (

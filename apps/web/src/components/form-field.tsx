@@ -1,11 +1,12 @@
 import type { ReactNode } from 'react'
+import { FieldHint } from '@/components/field-hint'
 import { Label } from '@/components/ui/label'
 import { cn } from '@/lib/utils'
 
 type FormFieldProps = {
   id: string
   label: string
-  hint?: string
+  tip?: string
   error?: string
   children: ReactNode
   className?: string
@@ -14,18 +15,18 @@ type FormFieldProps = {
 export function FormField({
   id,
   label,
-  hint,
+  tip,
   error,
   children,
   className,
 }: FormFieldProps) {
   return (
     <div className={cn('space-y-2', className)}>
-      <div className="space-y-1">
-        <Label htmlFor={id}>{label}</Label>
-        {hint && (
-          <p className="text-muted-foreground text-xs leading-relaxed">{hint}</p>
-        )}
+      <div className="flex items-center gap-1.5">
+        <Label htmlFor={id} className="text-foreground text-sm font-medium">
+          {label}
+        </Label>
+        {tip && <FieldHint tip={tip} />}
       </div>
       {children}
       {error && (

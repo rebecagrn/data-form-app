@@ -15,7 +15,7 @@ export function SubmitFeedback() {
     <Alert
       variant={isSuccess ? 'success' : 'destructive'}
       aria-live="polite"
-      className="transition-all duration-300"
+      className="animate-in fade-in-0 slide-in-from-top-1 duration-300"
     >
       {isSuccess ? (
         <CheckCircle2 aria-hidden />

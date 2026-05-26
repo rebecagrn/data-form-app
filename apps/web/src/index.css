@@ -1,4 +1,5 @@
 @import 'tailwindcss';
+@plugin "tailwindcss-animate";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -30,6 +31,10 @@
 
 :root {
   --radius: 0.75rem;
+  --page-glow: oklch(0.55 0.18 264 / 0.2);
+  --page-fade: oklch(0.99 0.01 264 / 0.55);
+  --page-grid: oklch(0.5 0.03 264 / 0.14);
+
   --background: oklch(0.99 0.006 264);
   --foreground: oklch(0.2 0.02 264);
   --card: oklch(1 0.004 264);
@@ -41,34 +46,38 @@
   --secondary: oklch(0.96 0.02 264);
   --secondary-foreground: oklch(0.28 0.04 264);
   --muted: oklch(0.96 0.015 264);
-  --muted-foreground: oklch(0.5 0.03 264);
+  --muted-foreground: oklch(0.48 0.03 264);
   --accent: oklch(0.95 0.03 264);
   --accent-foreground: oklch(0.28 0.05 264);
   --destructive: oklch(0.55 0.22 25);
-  --border: oklch(0.91 0.02 264);
-  --input: oklch(0.91 0.02 264);
+  --border: oklch(0.9 0.02 264);
+  --input: oklch(0.97 0.01 264);
   --ring: oklch(0.55 0.18 264);
 }
 
 .dark {
-  --background: oklch(0.14 0.02 264);
-  --foreground: oklch(0.98 0.01 264);
-  --card: oklch(0.18 0.025 264);
-  --card-foreground: oklch(0.98 0.01 264);
-  --popover: oklch(0.18 0.025 264);
-  --popover-foreground: oklch(0.98 0.01 264);
-  --primary: oklch(0.72 0.16 264);
-  --primary-foreground: oklch(0.18 0.03 264);
-  --secondary: oklch(0.24 0.03 264);
-  --secondary-foreground: oklch(0.98 0.01 264);
-  --muted: oklch(0.24 0.03 264);
-  --muted-foreground: oklch(0.68 0.04 264);
-  --accent: oklch(0.26 0.04 264);
-  --accent-foreground: oklch(0.98 0.01 264);
-  --destructive: oklch(0.65 0.2 25);
-  --border: oklch(1 0 0 / 12%);
-  --input: oklch(1 0 0 / 14%);
-  --ring: oklch(0.6 0.16 264);
+  --page-glow: oklch(0.62 0.2 264 / 0.35);
+  --page-fade: oklch(0.12 0.03 264 / 0.85);
+  --page-grid: oklch(0.75 0.05 264 / 0.1);
+
+  --background: oklch(0.16 0.025 264);
+  --foreground: oklch(0.97 0.01 264);
+  --card: oklch(0.22 0.035 264);
+  --card-foreground: oklch(0.97 0.01 264);
+  --popover: oklch(0.26 0.04 264);
+  --popover-foreground: oklch(0.97 0.01 264);
+  --primary: oklch(0.7 0.17 264);
+  --primary-foreground: oklch(0.16 0.03 264);
+  --secondary: oklch(0.28 0.04 264);
+  --secondary-foreground: oklch(0.95 0.01 264);
+  --muted: oklch(0.28 0.035 264);
+  --muted-foreground: oklch(0.78 0.04 264);
+  --accent: oklch(0.3 0.05 264);
+  --accent-foreground: oklch(0.97 0.01 264);
+  --destructive: oklch(0.68 0.19 25);
+  --border: oklch(0.42 0.04 264 / 0.55);
+  --input: oklch(0.28 0.035 264);
+  --ring: oklch(0.68 0.16 264);
 }
 
 @layer base {

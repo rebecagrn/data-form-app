@@ -1,22 +1,26 @@
 import { ClientRegistrationForm } from '@/components/client-registration-form'
+import { ThemeToggle } from '@/components/theme-toggle'
 
 function App() {
   return (
     <div className="relative min-h-svh overflow-hidden">
       <div
-        className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,oklch(0.55_0.18_264/0.18),transparent)]"
+        className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(ellipse_85%_55%_at_50%_-15%,var(--page-glow),transparent_65%)]"
         aria-hidden
       />
       <div
-        className="pointer-events-none absolute inset-0 -z-10 bg-[linear-gradient(to_bottom,transparent,oklch(0.99_0.01_264/0.5))]"
+        className="pointer-events-none absolute inset-0 -z-10 bg-[linear-gradient(to_bottom,transparent,var(--page-fade))]"
         aria-hidden
       />
       <div
-        className="pointer-events-none absolute inset-0 -z-10 opacity-[0.35] [background-image:radial-gradient(oklch(0.5_0.02_264/0.12)_1px,transparent_1px)] [background-size:20px_20px]"
+        className="pointer-events-none absolute inset-0 -z-10 opacity-40 [background-image:radial-gradient(var(--page-grid)_1px,transparent_1px)] [background-size:22px_22px]"
         aria-hidden
       />
 
-      <main className="flex min-h-svh flex-col items-center justify-center px-4 py-10 sm:px-6">
+      <main className="relative flex min-h-svh flex-col items-center justify-center px-4 py-10 sm:px-6">
+        <div className="absolute top-4 right-4 sm:top-6 sm:right-6">
+          <ThemeToggle />
+        </div>
         <ClientRegistrationForm />
       </main>
 

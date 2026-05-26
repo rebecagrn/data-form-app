@@ -98,7 +98,7 @@ export function ClientRegistrationForm() {
             <FormField
               id="fullName"
               label="Nome completo"
-              tip="Informe nome e sobrenome, como no documento."
+              tip="Informe nome e sobrenome"
               error={errors.fullName?.message}
             >
               <Input

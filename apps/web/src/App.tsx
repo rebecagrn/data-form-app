@@ -25,7 +25,7 @@ function App() {
       </main>
 
       <footer className="text-muted-foreground pb-6 text-center text-xs">
-        Data Form App — desafio técnico
+        Data Form App
       </footer>
     </div>
   )

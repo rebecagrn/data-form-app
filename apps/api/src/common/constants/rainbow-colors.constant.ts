@@ -6,6 +6,6 @@ export const RAINBOW_COLORS = [
   'blue',
   'indigo',
   'violet',
-] as const
+] as const;
 
-export type RainbowColor = (typeof RAINBOW_COLORS)[number]
+export type RainbowColor = (typeof RAINBOW_COLORS)[number];

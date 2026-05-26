@@ -3,27 +3,27 @@ import {
   CreateDateColumn,
   Entity,
   PrimaryGeneratedColumn,
-} from 'typeorm'
+} from 'typeorm';
 @Entity({ name: 'clients' })
 export class Client {
   @PrimaryGeneratedColumn('uuid')
-  id!: string
+  id!: string;
 
   @Column({ name: 'full_name', length: 255 })
-  fullName!: string
+  fullName!: string;
 
   @Column({ length: 11, unique: true })
-  cpf!: string
+  cpf!: string;
 
   @Column({ length: 255, unique: true })
-  email!: string
+  email!: string;
 
   @Column({ name: 'favorite_color', length: 32 })
-  favoriteColor!: string
+  favoriteColor!: string;
 
   @Column({ type: 'text', nullable: true })
-  notes!: string | null
+  notes!: string | null;
 
   @CreateDateColumn({ name: 'created_at' })
-  createdAt!: Date
+  createdAt!: Date;
 }

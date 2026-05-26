@@ -1,14 +1,14 @@
-import { ConflictException } from '@nestjs/common'
-import { Test, TestingModule } from '@nestjs/testing'
-import { getRepositoryToken } from '@nestjs/typeorm'
-import { QueryFailedError, Repository } from 'typeorm'
-import { ClientsService } from './clients.service'
-import { Client } from './entities/client.entity'
-import { CreateClientDto } from './dto/create-client.dto'
+import { ConflictException } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { QueryFailedError, Repository } from 'typeorm';
+import { ClientsService } from './clients.service';
+import { Client } from './entities/client.entity';
+import { CreateClientDto } from './dto/create-client.dto';
 
 describe('ClientsService', () => {
-  let service: ClientsService
-  let repository: jest.Mocked<Pick<Repository<Client>, 'create' | 'save'>>
+  let service: ClientsService;
+  let repository: jest.Mocked<Pick<Repository<Client>, 'create' | 'save'>>;
 
   const inputDto: CreateClientDto = {
     fullName: 'John Doe',
@@ -16,7 +16,7 @@ describe('ClientsService', () => {
     email: 'john@example.com',
     favoriteColor: 'blue',
     notes: 'VIP client',
-  }
+  };
 
   const savedClient: Client = {
     id: 'uuid-1',
@@ -26,13 +26,13 @@ describe('ClientsService', () => {
     favoriteColor: inputDto.favoriteColor,
     notes: inputDto.notes ?? null,
     createdAt: new Date('2026-05-25T00:00:00.000Z'),
-  }
+  };
 
   beforeEach(async () => {
     repository = {
       create: jest.fn().mockReturnValue(savedClient),
       save: jest.fn().mockResolvedValue(savedClient),
-    }
+    };
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         ClientsService,
@@ -41,32 +41,33 @@ describe('ClientsService', () => {
           useValue: repository,
         },
       ],
-    }).compile()
-    service = module.get<ClientsService>(ClientsService)
-  })
+    }).compile();
+    service = module.get<ClientsService>(ClientsService);
+  });
 
   it('should register a client', async () => {
-    const actual = await service.create(inputDto)
+    const actual = await service.create(inputDto);
     expect(repository.create).toHaveBeenCalledWith({
       fullName: inputDto.fullName,
       cpf: inputDto.cpf,
       email: inputDto.email,
       favoriteColor: inputDto.favoriteColor,
       notes: inputDto.notes,
-    })
-    expect(actual.id).toBe(savedClient.id)
-    expect(actual.cpf).toBe(inputDto.cpf)
-  })
+    });
+    expect(actual.id).toBe(savedClient.id);
+    expect(actual.cpf).toBe(inputDto.cpf);
+  });
 
   it('should throw conflict when CPF or email already exists', async () => {
     const duplicateError = new QueryFailedError(
       'INSERT',
       [],
       new Error('duplicate key'),
-    )
-    ;(duplicateError as QueryFailedError & { driverError: { code: string } })
-      .driverError = { code: '23505' }
-    repository.save.mockRejectedValueOnce(duplicateError)
-    await expect(service.create(inputDto)).rejects.toThrow(ConflictException)
-  })
-})
+    );
+    (
+      duplicateError as QueryFailedError & { driverError: { code: string } }
+    ).driverError = { code: '23505' };
+    repository.save.mockRejectedValueOnce(duplicateError);
+    await expect(service.create(inputDto)).rejects.toThrow(ConflictException);
+  });
+});

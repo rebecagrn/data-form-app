@@ -59,10 +59,9 @@ describe('ClientsService', () => {
   });
 
   it('should throw conflict when CPF or email already exists', async () => {
-    const duplicateError = new QueryFailedError('INSERT', [], new Error('duplicate key'));
-    (duplicateError as QueryFailedError & { driverError: { code: string } }).driverError = {
-      code: '23505',
-    };
+    const driverError = new Error('duplicate key') as Error & { code: string };
+    driverError.code = '23505';
+    const duplicateError = new QueryFailedError('INSERT', [], driverError);
     repository.save.mockRejectedValueOnce(duplicateError);
     await expect(service.create(inputDto)).rejects.toThrow(ConflictException);
   });

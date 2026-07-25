@@ -80,10 +80,9 @@ describe('Clients (e2e)', () => {
   it('POST /api/clients should return 409 for duplicate CPF', async () => {
     mockRepository.create.mockImplementation((payload) => payload);
 
-    const duplicateError = new QueryFailedError('INSERT', [], new Error('duplicate key'));
-    (duplicateError as QueryFailedError & { driverError: { code: string } }).driverError = {
-      code: '23505',
-    };
+    const driverError = new Error('duplicate key') as Error & { code: string };
+    driverError.code = '23505';
+    const duplicateError = new QueryFailedError('INSERT', [], driverError);
     mockRepository.save.mockRejectedValueOnce(duplicateError);
 
     await request(app.getHttpServer())

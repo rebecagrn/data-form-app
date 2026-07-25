@@ -19,7 +19,7 @@ import { Client } from './clients/entities/client.entity';
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
         host: configService.get<string>('DATABASE_HOST', 'localhost'),
-        port: Number(configService.get<string>('DATABASE_PORT', '5432')),
+        port: Number(configService.get<string>('DATABASE_PORT', '5434')),
         username: configService.get<string>('DATABASE_USER', 'dataform'),
         password: configService.get<string>('DATABASE_PASSWORD', 'dataform'),
         database: configService.get<string>('DATABASE_NAME', 'dataform'),

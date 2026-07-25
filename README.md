@@ -215,7 +215,7 @@ npm run docker:up
 |---------|-----|
 | Formulário (nginx) | http://localhost:8080 |
 | API direta | http://localhost:3000/api |
-| Postgres | `localhost:5432` |
+| Postgres | `localhost:5434` (host) → `5432` in the container |
 
 ```bash
 npm run docker:logs    # acompanhar logs

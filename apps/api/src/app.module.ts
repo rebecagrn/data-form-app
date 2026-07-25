@@ -1,3 +1,4 @@
+import { join } from 'node:path';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -23,9 +24,9 @@ import { Client } from './clients/entities/client.entity';
         password: configService.get<string>('DATABASE_PASSWORD', 'dataform'),
         database: configService.get<string>('DATABASE_NAME', 'dataform'),
         entities: [Client],
-        synchronize:
-          configService.get<string>('TYPEORM_SYNCHRONIZE', 'false') === 'true' ||
-          configService.get<string>('NODE_ENV') !== 'production',
+        migrations: [join(__dirname, 'database', 'migrations', '*.{ts,js}')],
+        migrationsRun: configService.get<string>('TYPEORM_MIGRATIONS_RUN', 'false') === 'true',
+        synchronize: configService.get<string>('TYPEORM_SYNCHRONIZE', 'false') === 'true',
       }),
     }),
     ClientsModule,

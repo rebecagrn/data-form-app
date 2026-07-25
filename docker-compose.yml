@@ -26,7 +26,8 @@ services:
     environment:
       NODE_ENV: production
       PORT: 3000
-      TYPEORM_SYNCHRONIZE: 'true'
+      TYPEORM_SYNCHRONIZE: 'false'
+      TYPEORM_MIGRATIONS_RUN: 'true'
       DATABASE_HOST: postgres
       DATABASE_PORT: 5432
       DATABASE_USER: dataform

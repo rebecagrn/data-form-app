@@ -127,7 +127,8 @@ data-form-app/
 │   ├── api/
 │   │   ├── src/
 │   │   │   ├── clients/          # Módulo de cadastro
-│   │   │   ├── common/           # Constantes, validadores (CPF)
+│   │   │   ├── common/           # Validadores (CPF)
+│   │   │   ├── database/         # DataSource e migrations
 │   │   │   └── ...
 │   │   ├── test/                 # e2e
 │   │   └── Dockerfile
@@ -137,6 +138,8 @@ data-form-app/
 │       │   ├── lib/              # API, schemas Zod
 │       │   └── hooks/            # Tema
 │       └── Dockerfile            # Build Vite + nginx
+├── packages/
+│   └── shared/                   # Constantes compartilhadas (arco-íris)
 ├── docker-compose.yml
 ├── package.json                  # Scripts e workspaces
 └── README.md

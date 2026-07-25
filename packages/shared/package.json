@@ -1,0 +1,25 @@
+{
+  "name": "@data-form/shared",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Shared domain constants for Data Form App",
+  "main": "./dist/rainbow-colors.js",
+  "types": "./dist/rainbow-colors.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/rainbow-colors.d.ts",
+      "require": "./dist/rainbow-colors.js",
+      "default": "./dist/rainbow-colors.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "lint": "biome check ."
+  },
+  "devDependencies": {
+    "typescript": "^5.7.3"
+  }
+}

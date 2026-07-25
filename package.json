@@ -4,16 +4,18 @@
   "private": true,
   "description": "Data Form App — monorepo (NestJS API + React web)",
   "workspaces": [
-    "apps/*"
+    "apps/*",
+    "packages/*"
   ],
   "scripts": {
-    "dev:api": "npm run start:dev -w @data-form/api",
-    "dev:web": "npm run dev -w @data-form/web",
+    "dev:api": "npm run build -w @data-form/shared && npm run start:dev -w @data-form/api",
+    "dev:web": "npm run build -w @data-form/shared && npm run dev -w @data-form/web",
     "dev": "concurrently -n api,web -c blue,green \"npm run dev:api\" \"npm run dev:web\"",
-    "build": "npm run build -w @data-form/api && npm run build -w @data-form/web",
+    "build": "npm run build -w @data-form/shared && npm run build -w @data-form/api && npm run build -w @data-form/web",
+    "build:shared": "npm run build -w @data-form/shared",
     "db:migrate": "npm run migration:run -w @data-form/api",
     "db:migrate:revert": "npm run migration:revert -w @data-form/api",
-    "test": "npm run test --workspaces --if-present",
+    "test": "npm run build -w @data-form/shared && npm run test --workspaces --if-present",
     "lint": "biome check .",
     "lint:fix": "biome check --write .",
     "format": "biome format --write .",

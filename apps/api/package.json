@@ -26,6 +26,7 @@
     "migration:create": "npm run typeorm -- migration:create"
   },
   "dependencies": {
+    "@data-form/shared": "*",
     "@nestjs/common": "^11.0.1",
     "@nestjs/config": "^4.0.4",
     "@nestjs/core": "^11.0.1",

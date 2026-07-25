@@ -1,5 +1,5 @@
+import { RAINBOW_COLORS } from '@data-form/shared'
 import { z } from 'zod'
-import { RAINBOW_COLORS } from '@/lib/constants/rainbow-colors'
 import { isValidCpf } from '@/lib/validators/cpf'
 
 export const clientFormSchema = z.object({

@@ -1,3 +1,4 @@
+import { RAINBOW_COLORS, type RainbowColor } from '@data-form/shared';
 import { Transform } from 'class-transformer';
 import {
   IsEmail,
@@ -8,7 +9,6 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
-import { RAINBOW_COLORS, type RainbowColor } from '../../common/constants/rainbow-colors.constant';
 import { IsCpf } from '../../common/validators/is-cpf.validator';
 
 export class CreateClientDto {

@@ -8,14 +8,16 @@ FROM base AS deps
 COPY package.json package-lock.json ./
 COPY apps/api/package.json ./apps/api/
 COPY apps/web/package.json ./apps/web/
+COPY packages/shared/package.json ./packages/shared/
 RUN npm ci
 
 FROM base AS build
 COPY --from=deps /app/node_modules ./node_modules
 COPY package.json package-lock.json ./
+COPY packages/shared ./packages/shared
 COPY apps/web ./apps/web
 RUN npm install -D -w @data-form/web typescript@~6.0.2
-RUN npm run build -w @data-form/web
+RUN npm run build -w @data-form/shared && npm run build -w @data-form/web
 
 FROM nginx:1.27-alpine AS production
 COPY apps/web/nginx.conf /etc/nginx/conf.d/default.conf

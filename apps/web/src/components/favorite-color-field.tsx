@@ -1,12 +1,8 @@
+import { RAINBOW_COLOR_LABELS, RAINBOW_COLOR_SWATCHES, RAINBOW_COLORS } from '@data-form/shared'
 import { Check } from 'lucide-react'
 import { type Control, Controller, type FieldError } from 'react-hook-form'
 import { FieldHint } from '@/components/field-hint'
 import { Label } from '@/components/ui/label'
-import {
-  RAINBOW_COLOR_LABELS,
-  RAINBOW_COLOR_SWATCHES,
-  RAINBOW_COLORS,
-} from '@/lib/constants/rainbow-colors'
 import type { ClientFormValues } from '@/lib/schemas/client-form.schema'
 import { cn } from '@/lib/utils'
 

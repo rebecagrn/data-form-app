@@ -75,25 +75,43 @@ Notificações no canto superior direito, sem deslocar o layout do formulário �
 - **Desenvolvimento:** apenas Postgres no Compose; API e Web rodam no host com hot reload.
 - **Produção local/demo:** `docker compose` sobe Postgres + API + Web (multi-stage build).
 
-### Banco de dados — sem migrations
+### Banco de dados — migrations
 
-**Não há migrations TypeORM neste repositório.** O schema é criado/atualizado via `synchronize` do TypeORM, o que simplifica o setup em dev e Docker, mas **não** é o padrão recomendado para produção.
+O schema é versionado com **migrations do TypeORM** em `apps/api/src/database/migrations/`. O `DataSource` da CLI fica em [`apps/api/src/database/data-source.ts`](apps/api/src/database/data-source.ts) e usa as mesmas variáveis `DATABASE_*`. O `synchronize` fica **desligado por padrão** e só liga com `TYPEORM_SYNCHRONIZE=true` (uso pontual em dev).
 
 | Ambiente | Como o schema é aplicado |
 |----------|---------------------------|
-| **Dev local** (`npm run dev:api`, `NODE_ENV=development`) | `synchronize` ativo automaticamente — tabelas refletem a entidade `Client` ao subir a API |
-| **Docker Compose** (serviço `api`) | `TYPEORM_SYNCHRONIZE=true` no `docker-compose.yml` |
-| **Produção** | Usar migrations versionadas (`typeorm migration:generate` / `migration:run`) e `synchronize: false` |
+| **Dev local** (`npm run dev:api`) | Rodar `npm run db:migrate` após subir o Postgres; `synchronize` desligado |
+| **Docker Compose** (serviço `api`) | `TYPEORM_MIGRATIONS_RUN=true` executa as migrations pendentes no boot; `TYPEORM_SYNCHRONIZE=false` |
+| **Produção** | `synchronize: false` + migrations versionadas (`migration:run` no deploy ou `TYPEORM_MIGRATIONS_RUN=true`) |
 
-A lógica está em `apps/api/src/app.module.ts`: sync liga se `TYPEORM_SYNCHRONIZE=true` **ou** se `NODE_ENV` não for `production`. Por isso, mesmo com `TYPEORM_SYNCHRONIZE=false` no `.env.example`, o dev local ainda sincroniza enquanto `NODE_ENV=development`.
+Flags em `apps/api/src/app.module.ts`:
 
-**Notas de operação:**
+- `TYPEORM_SYNCHRONIZE=true` — cria/atualiza tabelas a partir das entidades (apenas dev; nunca em produção).
+- `TYPEORM_MIGRATIONS_RUN=true` — roda migrations pendentes ao iniciar a API.
 
-- Primeira execução: subir Postgres antes da API; não é preciso rodar scripts SQL manuais.
-- Alterações na entidade: reiniciar a API (dev/Docker) para o TypeORM ajustar colunas — sem histórico de migration.
-- Dados em volume Docker (`postgres_data`) persistem entre `docker compose down`; o schema evolui com sync, não com arquivos `.ts` de migration.
+**Comandos (workspace `@data-form/api`):**
 
-Para evoluir o projeto em produção, desligar `synchronize`, adicionar pasta `apps/api/src/migrations/` e versionar mudanças de schema explicitamente.
+```bash
+npm run db:migrate                     # aplica migrations pendentes (proxy da raiz)
+npm run db:migrate:revert              # desfaz a última migration
+
+# ou direto no workspace da API:
+npm run migration:run -w @data-form/api
+npm run migration:show -w @data-form/api
+npm run migration:generate -w @data-form/api -- src/database/migrations/NomeDaMudanca
+npm run migration:create -w @data-form/api -- src/database/migrations/NomeDaMudanca
+```
+
+**Fluxo ao alterar uma entidade:** editar a entity → `migration:generate` → revisar o SQL gerado → `db:migrate`. Em produção, nunca editar migrations já aplicadas.
+
+**Setup inicial (dev):**
+
+```bash
+docker compose up -d postgres
+npm run db:migrate
+npm run dev:api
+```
 
 ### Tema claro/escuro
 
@@ -151,7 +169,7 @@ cp apps/web/.env.example apps/web/.env
 
 | Arquivo | Variáveis principais |
 |---------|----------------------|
-| `apps/api/.env` | `DATABASE_*`, `PORT`, `CORS_ORIGIN`, `TYPEORM_SYNCHRONIZE` (ver [Banco de dados — sem migrations](#banco-de-dados--sem-migrations)) |
+| `apps/api/.env` | `DATABASE_*`, `PORT`, `CORS_ORIGIN`, `TYPEORM_SYNCHRONIZE`, `TYPEORM_MIGRATIONS_RUN` (ver [Banco de dados — migrations](#banco-de-dados--migrations)) |
 | `apps/web/.env` | `VITE_API_URL` (dev: `http://localhost:3000/api`) |
 
 ---

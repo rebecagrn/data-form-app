@@ -1,111 +1,111 @@
 # Data Form App
 
-Aplicação monorepo para cadastro de clientes. O usuário preenche um formulário com dados pessoais e cor preferida; o sistema valida, persiste no PostgreSQL e informa sucesso ou erro (incluindo duplicidade de CPF/e-mail). A tela também lista os clientes já cadastrados, com CPF mascarado.
+Monorepo for client registration. The user fills in personal data and a favorite color; the system validates the payload, persists it in PostgreSQL, and reports success or errors (including duplicate CPF/email). The page also lists registered clients with a masked CPF.
 
-Repositório: https://github.com/rebecagrn/data-form-app
+Repository: https://github.com/rebecagrn/data-form-app
 
 ---
 
-## Tecnologias
+## Tech stack
 
 ### Backend (`apps/api`)
 
-| Tecnologia | Uso |
-|------------|-----|
-| [NestJS](https://nestjs.com/) | API REST, módulos, injeção de dependência |
-| [TypeORM](https://typeorm.io/) | ORM e entidade `Client` |
-| [PostgreSQL](https://www.postgresql.org/) | Banco de dados |
-| [class-validator](https://github.com/typestack/class-validator) / [class-transformer](https://github.com/typestack/class-transformer) | Validação de DTOs |
-| [Jest](https://jestjs.io/) + [Supertest](https://github.com/ladjs/supertest) | Testes unitários e e2e |
+| Technology | Role |
+|------------|------|
+| [NestJS](https://nestjs.com/) | REST API, modules, dependency injection |
+| [TypeORM](https://typeorm.io/) | ORM and `Client` entity |
+| [PostgreSQL](https://www.postgresql.org/) | Database |
+| [class-validator](https://github.com/typestack/class-validator) / [class-transformer](https://github.com/typestack/class-transformer) | DTO validation |
+| [Jest](https://jestjs.io/) + [Supertest](https://github.com/ladjs/supertest) | Unit and e2e tests |
 
 ### Frontend (`apps/web`)
 
-| Tecnologia | Uso |
-|------------|-----|
-| [React](https://react.dev/) + [Vite](https://vite.dev/) | UI e build |
-| [TypeScript](https://www.typescriptlang.org/) | Tipagem |
-| [Tailwind CSS](https://tailwindcss.com/) v4 | Estilos |
-| [shadcn/ui](https://ui.shadcn.com/) (estilo New York) | Componentes (Button, Input, Card, Alert, etc.) |
-| [React Hook Form](https://react-hook-form.com/) + [Zod](https://zod.dev/) | Formulário e validação no cliente |
-| [TanStack Query](https://tanstack.com/query) | Mutação do cadastro (`useMutation`) e listagem (`useQuery`) |
-| [Axios](https://axios-http.com/) | Cliente HTTP |
-| [Sonner](https://sonner.emilkowal.ski/) | Toasts de sucesso/erro |
-| [Lucide](https://lucide.dev/) | Ícones |
-| [Jest](https://jestjs.io/) + [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/) | Testes do formulário |
+| Technology | Role |
+|------------|------|
+| [React](https://react.dev/) + [Vite](https://vite.dev/) | UI and build |
+| [TypeScript](https://www.typescriptlang.org/) | Typing |
+| [Tailwind CSS](https://tailwindcss.com/) v4 | Styling |
+| [shadcn/ui](https://ui.shadcn.com/) (New York style) | Components (Button, Input, Card, Alert, etc.) |
+| [React Hook Form](https://react-hook-form.com/) + [Zod](https://zod.dev/) | Form state and client-side validation |
+| [TanStack Query](https://tanstack.com/query) | Registration mutation (`useMutation`) and listing (`useQuery`) |
+| [Axios](https://axios-http.com/) | HTTP client |
+| [Sonner](https://sonner.emilkowal.ski/) | Success/error toasts |
+| [Lucide](https://lucide.dev/) | Icons |
+| [Jest](https://jestjs.io/) + [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/) | Form and list tests |
 
-### Infraestrutura
+### Infrastructure
 
-| Tecnologia | Uso |
-|------------|-----|
+| Technology | Role |
+|------------|------|
 | [Docker](https://www.docker.com/) + [Docker Compose](https://docs.docker.com/compose/) | Postgres, API, Web (nginx) |
 | npm workspaces | Monorepo (`apps/api`, `apps/web`) |
-| [Biome](https://biomejs.dev/) | Lint, format e organize imports (substitui ESLint + Prettier) |
+| [Biome](https://biomejs.dev/) | Lint, format, and import sorting (replaces ESLint + Prettier) |
 
 ---
 
-## Decisões de arquitetura
+## Architecture decisions
 
-### Monorepo com npm workspaces
+### Monorepo with npm workspaces
 
-Um único repositório com `apps/api` e `apps/web` facilita versionamento conjunto e scripts na raiz (`dev`, `build`, `test`, `docker:up`).
+A single repository with `apps/api` and `apps/web` keeps versioning together and puts shared scripts at the root (`dev`, `build`, `test`, `docker:up`).
 
-### NestJS no backend
+### NestJS on the backend
 
-Escolhido por estrutura modular (controllers, services, DTOs), validação declarativa com `class-validator`, integração madura com TypeORM/Postgres e testes nativos — adequado para evolução por outra equipe sem reescrever boilerplate.
+Chosen for its modular layout (controllers, services, DTOs), declarative `class-validator` checks, mature TypeORM/Postgres integration, and first-class tests — so another team can extend the API without rewriting boilerplate.
 
-### React + Vite no frontend
+### React + Vite on the frontend
 
-SPA leve com HMR, TypeScript e proxy de desenvolvimento (`/api` → API local). Em produção Docker, o nginx serve o build estático e faz proxy de `/api` para o serviço NestJS.
+A light SPA with HMR, TypeScript, and a dev proxy (`/api` → local API). In Docker production, nginx serves the static build and proxies `/api` to the NestJS service.
 
-### Validação em duas camadas
+### Two-layer validation
 
-- **Cliente:** Zod + React Hook Form (feedback imediato, máscara de CPF).
-- **Servidor:** DTOs com validação de CPF brasileiro, e-mail e cor do arco-íris (`RAINBOW_COLORS` compartilhável no domínio).
+- **Client:** Zod + React Hook Form (immediate feedback, CPF mask).
+- **Server:** DTOs that validate Brazilian CPF, email, and rainbow color (`RAINBOW_COLORS`, shared across the domain).
 
-### Unicidade de cadastro
+### Unique registration
 
-Constraint `UNIQUE` em `cpf` e `email` no Postgres; a API responde `409 Conflict` quando o cliente já existe.
+`UNIQUE` constraints on `cpf` and `email` in Postgres; the API returns `409 Conflict` when the client already exists.
 
-### Feedback com Sonner (toasts)
+### Feedback with Sonner (toasts)
 
-Notificações no canto superior direito, sem deslocar o layout do formulário — preferível ao Alert inline para ações de submit.
+Notifications in the top-right corner, without shifting the form layout — preferred over an inline Alert for submit actions.
 
 ### Docker
 
-- **Desenvolvimento:** apenas Postgres no Compose; API e Web rodam no host com hot reload.
-- **Produção local/demo:** `docker compose` sobe Postgres + API + Web (multi-stage build).
+- **Development:** only Postgres in Compose; API and Web run on the host with hot reload.
+- **Local/demo production:** `docker compose` starts Postgres + API + Web (multi-stage build).
 
-### Banco de dados — migrations
+### Database — migrations
 
-O schema é versionado com **migrations do TypeORM** em `apps/api/src/database/migrations/`. O `DataSource` da CLI fica em [`apps/api/src/database/data-source.ts`](apps/api/src/database/data-source.ts) e usa as mesmas variáveis `DATABASE_*`. O `synchronize` fica **desligado por padrão** e só liga com `TYPEORM_SYNCHRONIZE=true` (uso pontual em dev).
+The schema is versioned with **TypeORM migrations** in `apps/api/src/database/migrations/`. The CLI `DataSource` lives in [`apps/api/src/database/data-source.ts`](apps/api/src/database/data-source.ts) and uses the same `DATABASE_*` variables. `synchronize` is **off by default** and only turns on with `TYPEORM_SYNCHRONIZE=true` (occasional local use).
 
-| Ambiente | Como o schema é aplicado |
-|----------|---------------------------|
-| **Dev local** (`npm run dev:api`) | Rodar `npm run db:migrate` após subir o Postgres; `synchronize` desligado |
-| **Docker Compose** (serviço `api`) | `TYPEORM_MIGRATIONS_RUN=true` executa as migrations pendentes no boot; `TYPEORM_SYNCHRONIZE=false` |
-| **Produção** | `synchronize: false` + migrations versionadas (`migration:run` no deploy ou `TYPEORM_MIGRATIONS_RUN=true`) |
+| Environment | How the schema is applied |
+|-------------|---------------------------|
+| **Local dev** (`npm run dev:api`) | Run `npm run db:migrate` after starting Postgres; `synchronize` off |
+| **Docker Compose** (`api` service) | `TYPEORM_MIGRATIONS_RUN=true` runs pending migrations on boot; `TYPEORM_SYNCHRONIZE=false` |
+| **Production** | `synchronize: false` + versioned migrations (`migration:run` on deploy or `TYPEORM_MIGRATIONS_RUN=true`) |
 
-Flags em `apps/api/src/app.module.ts`:
+Flags in `apps/api/src/app.module.ts`:
 
-- `TYPEORM_SYNCHRONIZE=true` — cria/atualiza tabelas a partir das entidades (apenas dev; nunca em produção).
-- `TYPEORM_MIGRATIONS_RUN=true` — roda migrations pendentes ao iniciar a API.
+- `TYPEORM_SYNCHRONIZE=true` — create/update tables from entities (dev only; never in production).
+- `TYPEORM_MIGRATIONS_RUN=true` — run pending migrations when the API starts.
 
-**Comandos (workspace `@data-form/api`):**
+**Commands (workspace `@data-form/api`):**
 
 ```bash
-npm run db:migrate                     # aplica migrations pendentes (proxy da raiz)
-npm run db:migrate:revert              # desfaz a última migration
+npm run db:migrate                     # apply pending migrations (root proxy)
+npm run db:migrate:revert              # undo the last migration
 
-# ou direto no workspace da API:
+# or directly in the API workspace:
 npm run migration:run -w @data-form/api
 npm run migration:show -w @data-form/api
-npm run migration:generate -w @data-form/api -- src/database/migrations/NomeDaMudanca
-npm run migration:create -w @data-form/api -- src/database/migrations/NomeDaMudanca
+npm run migration:generate -w @data-form/api -- src/database/migrations/ChangeName
+npm run migration:create -w @data-form/api -- src/database/migrations/ChangeName
 ```
 
-**Fluxo ao alterar uma entidade:** editar a entity → `migration:generate` → revisar o SQL gerado → `db:migrate`. Em produção, nunca editar migrations já aplicadas.
+**Flow when changing an entity:** edit the entity → `migration:generate` → review the generated SQL → `db:migrate`. In production, never edit migrations that have already been applied.
 
-**Setup inicial (dev):**
+**Initial setup (dev):**
 
 ```bash
 docker compose up -d postgres
@@ -113,49 +113,49 @@ npm run db:migrate
 npm run dev:api
 ```
 
-### Tema claro/escuro
+### Light/dark theme
 
-Preferência persistida em `localStorage`; tokens CSS (oklch) em `apps/web/src/index.css`.
+Preference persisted in `localStorage`; CSS tokens (oklch) in `apps/web/src/index.css`.
 
 ---
 
-## Estrutura do projeto
+## Project structure
 
 ```
 data-form-app/
 ├── apps/
 │   ├── api/
 │   │   ├── src/
-│   │   │   ├── clients/          # Módulo de cadastro
-│   │   │   ├── common/           # Validadores (CPF)
-│   │   │   ├── database/         # DataSource e migrations
+│   │   │   ├── clients/          # Registration module
+│   │   │   ├── common/           # Validators (CPF)
+│   │   │   ├── database/         # DataSource and migrations
 │   │   │   └── ...
 │   │   ├── test/                 # e2e
 │   │   └── Dockerfile
 │   └── web/
 │       ├── src/
-│       │   ├── components/       # Formulário, UI shadcn
-│       │   ├── lib/              # API, schemas Zod
-│       │   └── hooks/            # Tema
-│       └── Dockerfile            # Build Vite + nginx
+│       │   ├── components/       # Form, list, shadcn UI
+│       │   ├── lib/              # API client, Zod schemas
+│       │   └── hooks/            # Theme
+│       └── Dockerfile            # Vite build + nginx
 ├── packages/
-│   └── shared/                   # Constantes compartilhadas (arco-íris)
+│   └── shared/                   # Shared constants (rainbow colors)
 ├── docker-compose.yml
-├── package.json                  # Scripts e workspaces
+├── package.json                  # Scripts and workspaces
 └── README.md
 ```
 
 ---
 
-## Pré-requisitos
+## Prerequisites
 
 - **Node.js** >= 20
-- **npm** (v9+ recomendado, para workspaces)
-- **Docker** e **Docker Compose** (banco local ou stack completa)
+- **npm** (v9+ recommended, for workspaces)
+- **Docker** and **Docker Compose** (local database or full stack)
 
 ---
 
-## Instalação
+## Setup
 
 ```bash
 git clone https://github.com/rebecagrn/data-form-app.git
@@ -163,88 +163,88 @@ cd data-form-app
 npm install
 ```
 
-Configure as variáveis de ambiente:
+Configure environment variables:
 
 ```bash
 cp apps/api/.env.example apps/api/.env
 cp apps/web/.env.example apps/web/.env
 ```
 
-| Arquivo | Variáveis principais |
-|---------|----------------------|
-| `apps/api/.env` | `DATABASE_*`, `PORT`, `CORS_ORIGIN`, `TYPEORM_SYNCHRONIZE`, `TYPEORM_MIGRATIONS_RUN` (ver [Banco de dados — migrations](#banco-de-dados--migrations)) |
+| File | Main variables |
+|------|----------------|
+| `apps/api/.env` | `DATABASE_*`, `PORT`, `CORS_ORIGIN`, `TYPEORM_SYNCHRONIZE`, `TYPEORM_MIGRATIONS_RUN` (see [Database — migrations](#database--migrations)) |
 | `apps/web/.env` | `VITE_API_URL` (dev: `http://localhost:3000/api`) |
 
 ---
 
-## Como executar
+## Running the app
 
-### Opção A — Desenvolvimento local (recomendado para codar)
+### Option A — Local development (recommended for coding)
 
-1. Suba apenas o Postgres:
+1. Start Postgres only:
 
 ```bash
 docker compose up -d postgres
 ```
 
-2. Inicie API e Web:
+2. Start API and Web:
 
 ```bash
 npm run dev
 ```
 
-| Serviço | URL |
+| Service | URL |
 |---------|-----|
-| Formulário (Vite) | http://localhost:5173 |
+| Form (Vite) | http://localhost:5173 |
 | API | http://localhost:3000/api |
 | Health check | http://localhost:3000/api/health |
 
-Comandos individuais:
+Individual commands:
 
 ```bash
-npm run dev:api   # só API
-npm run dev:web   # só Web
+npm run dev:api   # API only
+npm run dev:web   # Web only
 ```
 
-### Opção B — Stack completa com Docker
+### Option B — Full Docker stack
 
-Build e sobe Postgres + API + Web:
+Build and start Postgres + API + Web:
 
 ```bash
 npm run docker:up
 ```
 
-| Serviço | URL |
+| Service | URL |
 |---------|-----|
-| Formulário (nginx) | http://localhost:8080 |
-| API direta | http://localhost:3000/api |
+| Form (nginx) | http://localhost:8080 |
+| API directly | http://localhost:3000/api |
 | Postgres | `localhost:5434` (host) → `5432` in the container |
 
 ```bash
-npm run docker:logs    # acompanhar logs
-npm run docker:down    # parar containers
+npm run docker:logs    # follow logs
+npm run docker:down    # stop containers
 ```
 
-No Docker, o front usa `VITE_API_URL=/api` e o nginx encaminha para o serviço `api`.
+In Docker, the frontend uses `VITE_API_URL=/api` and nginx proxies that path to the `api` service.
 
 ---
 
 ## API
 
-| Método | Rota | Descrição |
-|--------|------|-----------|
+| Method | Route | Description |
+|--------|-------|-------------|
 | `GET` | `/api/health` | Health check |
-| `GET` | `/api/clients` | Lista clientes (paginado; CPF mascarado) |
-| `POST` | `/api/clients` | Cadastra cliente |
+| `GET` | `/api/clients` | List clients (paginated; masked CPF) |
+| `POST` | `/api/clients` | Register a client |
 
 **Query params (`GET /api/clients`):**
 
-| Param | Padrão | Limite |
-|-------|--------|--------|
+| Param | Default | Limit |
+|-------|---------|-------|
 | `page` | `1` | ≥ 1 |
 | `limit` | `20` | 1–50 |
 
-**Exemplo de resposta (`GET /api/clients`):**
+**Example response (`GET /api/clients`):**
 
 ```json
 {
@@ -265,9 +265,9 @@ No Docker, o front usa `VITE_API_URL=/api` e o nginx encaminha para o serviço `
 }
 ```
 
-Na listagem o CPF vem mascarado. O `POST` continua devolvendo o CPF completo do cadastro recém-criado.
+The list returns a masked CPF. `POST` still returns the full CPF of the newly created record.
 
-**Exemplo de body (`POST /api/clients`):**
+**Example body (`POST /api/clients`):**
 
 ```json
 {
@@ -275,22 +275,22 @@ Na listagem o CPF vem mascarado. O `POST` continua devolvendo o CPF completo do 
   "cpf": "529.982.247-25",
   "email": "maria@example.com",
   "favoriteColor": "blue",
-  "notes": "opcional"
+  "notes": "optional"
 }
 ```
 
-**Cores válidas:** `red`, `orange`, `yellow`, `green`, `blue`, `indigo`, `violet`
+**Valid colors:** `red`, `orange`, `yellow`, `green`, `blue`, `indigo`, `violet`
 
-**Respostas comuns:**
+**Common responses:**
 
-| Status | Situação |
-|--------|----------|
-| `200` | Lista de clientes |
-| `201` | Cadastro criado |
-| `400` | Dados inválidos (CPF, e-mail, cor, paginação, etc.) |
-| `409` | CPF ou e-mail já cadastrado |
+| Status | Meaning |
+|--------|---------|
+| `200` | Client list |
+| `201` | Client created |
+| `400` | Invalid data (CPF, email, color, pagination, etc.) |
+| `409` | CPF or email already registered |
 
-**Teste rápido com curl:**
+**Quick curl test:**
 
 ```bash
 curl http://localhost:3000/api/clients
@@ -302,29 +302,29 @@ curl -X POST http://localhost:3000/api/clients \
     "cpf": "529.982.247-25",
     "email": "john@example.com",
     "favoriteColor": "blue",
-    "notes": "Teste"
+    "notes": "Test"
   }'
 ```
 
 ---
 
-## Scripts disponíveis (raiz)
+## Available scripts (root)
 
-| Script | Descrição |
-|--------|-----------|
-| `npm run dev` | API + Web em paralelo |
-| `npm run dev:api` | API em modo watch |
+| Script | Description |
+|--------|-------------|
+| `npm run dev` | API + Web in parallel |
+| `npm run dev:api` | API in watch mode |
 | `npm run dev:web` | Vite dev server |
-| `npm run build` | Build de API e Web |
-| `npm run test` | Testes em todos os workspaces |
+| `npm run build` | Build API and Web |
+| `npm run test` | Tests in all workspaces |
 | `npm run lint` | Biome (lint + format check) |
-| `npm run lint:fix` | Biome com correções automáticas |
-| `npm run format` | Formata arquivos com Biome |
+| `npm run lint:fix` | Biome with automatic fixes |
+| `npm run format` | Format files with Biome |
 | `npm run docker:up` | Compose: build + up |
-| `npm run docker:down` | Para containers |
-| `npm run docker:logs` | Logs do Compose |
+| `npm run docker:down` | Stop containers |
+| `npm run docker:logs` | Compose logs |
 
-Testes e2e da API:
+API e2e tests:
 
 ```bash
 npm run test:e2e -w @data-form/api
@@ -332,24 +332,23 @@ npm run test:e2e -w @data-form/api
 
 ---
 
-## Lint e formatação (Biome)
+## Lint and formatting (Biome)
 
-Configuração central em [`biome.json`](./biome.json). No VS Code/Cursor, instale a extensão **Biome** (`biomejs.biome`); o repositório recomenda format-on-save em [`.vscode/settings.json`](./.vscode/settings.json).
+Central config in [`biome.json`](./biome.json). In VS Code/Cursor, install the **Biome** extension (`biomejs.biome`); the repo enables format-on-save in [`.vscode/settings.json`](./.vscode/settings.json).
 
 ```bash
-npm run lint        # verifica lint + formatação
-npm run lint:fix    # corrige automaticamente
-npm run format      # só formata
+npm run lint        # check lint + formatting
+npm run lint:fix    # apply automatic fixes
+npm run format      # format only
 ```
 
 ---
 
-## Testes
+## Tests
 
 ```bash
 npm run test
 ```
 
-- **API:** services, controllers, validador de CPF, e2e (health + clients).
-- **Web:** utilitários, formulário de cadastro e lista de clientes (RTL).
-
+- **API:** services, controllers, CPF validator, e2e (health + clients).
+- **Web:** utilities, registration form, and client list (RTL).

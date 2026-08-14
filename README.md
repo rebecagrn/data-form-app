@@ -1,6 +1,6 @@
 # Data Form App
 
-Aplicação monorepo para cadastro de clientes. O usuário preenche um formulário com dados pessoais e cor preferida; o sistema valida, persiste no PostgreSQL e informa sucesso ou erro (incluindo duplicidade de CPF/e-mail).
+Aplicação monorepo para cadastro de clientes. O usuário preenche um formulário com dados pessoais e cor preferida; o sistema valida, persiste no PostgreSQL e informa sucesso ou erro (incluindo duplicidade de CPF/e-mail). A tela também lista os clientes já cadastrados, com CPF mascarado.
 
 Repositório: https://github.com/rebecagrn/data-form-app
 
@@ -27,7 +27,7 @@ Repositório: https://github.com/rebecagrn/data-form-app
 | [Tailwind CSS](https://tailwindcss.com/) v4 | Estilos |
 | [shadcn/ui](https://ui.shadcn.com/) (estilo New York) | Componentes (Button, Input, Card, Alert, etc.) |
 | [React Hook Form](https://react-hook-form.com/) + [Zod](https://zod.dev/) | Formulário e validação no cliente |
-| [TanStack Query](https://tanstack.com/query) | Mutação do cadastro (`useMutation`) |
+| [TanStack Query](https://tanstack.com/query) | Mutação do cadastro (`useMutation`) e listagem (`useQuery`) |
 | [Axios](https://axios-http.com/) | Cliente HTTP |
 | [Sonner](https://sonner.emilkowal.ski/) | Toasts de sucesso/erro |
 | [Lucide](https://lucide.dev/) | Ícones |
@@ -234,7 +234,38 @@ No Docker, o front usa `VITE_API_URL=/api` e o nginx encaminha para o serviço `
 | Método | Rota | Descrição |
 |--------|------|-----------|
 | `GET` | `/api/health` | Health check |
+| `GET` | `/api/clients` | Lista clientes (paginado; CPF mascarado) |
 | `POST` | `/api/clients` | Cadastra cliente |
+
+**Query params (`GET /api/clients`):**
+
+| Param | Padrão | Limite |
+|-------|--------|--------|
+| `page` | `1` | ≥ 1 |
+| `limit` | `20` | 1–50 |
+
+**Exemplo de resposta (`GET /api/clients`):**
+
+```json
+{
+  "items": [
+    {
+      "id": "uuid",
+      "fullName": "Maria Silva",
+      "cpf": "***.***.***-25",
+      "email": "maria@example.com",
+      "favoriteColor": "blue",
+      "notes": null,
+      "createdAt": "2026-05-26T00:00:00.000Z"
+    }
+  ],
+  "total": 1,
+  "page": 1,
+  "limit": 20
+}
+```
+
+Na listagem o CPF vem mascarado. O `POST` continua devolvendo o CPF completo do cadastro recém-criado.
 
 **Exemplo de body (`POST /api/clients`):**
 
@@ -254,13 +285,16 @@ No Docker, o front usa `VITE_API_URL=/api` e o nginx encaminha para o serviço `
 
 | Status | Situação |
 |--------|----------|
+| `200` | Lista de clientes |
 | `201` | Cadastro criado |
-| `400` | Dados inválidos (CPF, e-mail, cor, etc.) |
+| `400` | Dados inválidos (CPF, e-mail, cor, paginação, etc.) |
 | `409` | CPF ou e-mail já cadastrado |
 
 **Teste rápido com curl:**
 
 ```bash
+curl http://localhost:3000/api/clients
+
 curl -X POST http://localhost:3000/api/clients \
   -H "Content-Type: application/json" \
   -d '{
@@ -317,5 +351,5 @@ npm run test
 ```
 
 - **API:** services, controllers, validador de CPF, e2e (health + clients).
-- **Web:** utilitários e formulário de cadastro (RTL).
+- **Web:** utilitários, formulário de cadastro e lista de clientes (RTL).
 

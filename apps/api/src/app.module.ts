@@ -4,6 +4,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { RedisCacheModule } from './cache/redis-cache.module';
 import { ClientsModule } from './clients/clients.module';
 import { Client } from './clients/entities/client.entity';
 
@@ -29,6 +30,7 @@ import { Client } from './clients/entities/client.entity';
         synchronize: configService.get<string>('TYPEORM_SYNCHRONIZE', 'false') === 'true',
       }),
     }),
+    RedisCacheModule,
     ClientsModule,
   ],
   controllers: [AppController],

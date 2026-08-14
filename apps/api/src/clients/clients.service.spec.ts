@@ -1,7 +1,9 @@
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { ConflictException } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { QueryFailedError, type Repository } from 'typeorm';
+import { CACHE } from '../cache/cache.constants';
 import { ClientsService } from './clients.service';
 import type { CreateClientDto } from './dto/create-client.dto';
 import { Client } from './entities/client.entity';
@@ -9,6 +11,11 @@ import { Client } from './entities/client.entity';
 describe('ClientsService', () => {
   let service: ClientsService;
   let repository: jest.Mocked<Pick<Repository<Client>, 'create' | 'save' | 'findAndCount'>>;
+  const cacheManager = {
+    get: jest.fn(),
+    set: jest.fn(),
+    wrap: jest.fn(),
+  };
 
   const inputDto: CreateClientDto = {
     fullName: 'John Doe',
@@ -34,6 +41,11 @@ describe('ClientsService', () => {
       save: jest.fn().mockResolvedValue(savedClient),
       findAndCount: jest.fn().mockResolvedValue([[], 0]),
     };
+    cacheManager.get.mockReset().mockResolvedValue(undefined);
+    cacheManager.set.mockReset().mockResolvedValue(undefined);
+    cacheManager.wrap
+      .mockReset()
+      .mockImplementation((_key: string, loader: () => Promise<unknown>) => loader());
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         ClientsService,
@@ -41,12 +53,16 @@ describe('ClientsService', () => {
           provide: getRepositoryToken(Client),
           useValue: repository,
         },
+        {
+          provide: CACHE_MANAGER,
+          useValue: cacheManager,
+        },
       ],
     }).compile();
     service = module.get<ClientsService>(ClientsService);
   });
 
-  it('should register a client', async () => {
+  it('should register a client and invalidate the list cache', async () => {
     const actual = await service.create(inputDto);
     expect(repository.create).toHaveBeenCalledWith({
       fullName: inputDto.fullName,
@@ -57,6 +73,10 @@ describe('ClientsService', () => {
     });
     expect(actual.id).toBe(savedClient.id);
     expect(actual.cpf).toBe(inputDto.cpf);
+    expect(cacheManager.set).toHaveBeenCalledWith(
+      CACHE.CLIENTS_LIST_VERSION_KEY,
+      expect.any(String),
+    );
   });
 
   it('should list clients with pagination and masked CPF', async () => {
@@ -90,11 +110,25 @@ describe('ClientsService', () => {
     });
   });
 
+  it('should return cached clients without querying the database', async () => {
+    const cachedList = {
+      items: [],
+      total: 0,
+      page: 1,
+      limit: 20,
+    };
+    cacheManager.wrap.mockResolvedValueOnce(cachedList);
+    const actual = await service.findAll({});
+    expect(actual).toEqual(cachedList);
+    expect(repository.findAndCount).not.toHaveBeenCalled();
+  });
+
   it('should throw conflict when CPF or email already exists', async () => {
     const driverError = new Error('duplicate key') as Error & { code: string };
     driverError.code = '23505';
     const duplicateError = new QueryFailedError('INSERT', [], driverError);
     repository.save.mockRejectedValueOnce(duplicateError);
     await expect(service.create(inputDto)).rejects.toThrow(ConflictException);
+    expect(cacheManager.set).not.toHaveBeenCalled();
   });
 });

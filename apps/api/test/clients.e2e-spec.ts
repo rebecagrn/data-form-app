@@ -1,3 +1,4 @@
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { type INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
@@ -15,11 +16,21 @@ describe('Clients (e2e)', () => {
     save: jest.fn(),
     findAndCount: jest.fn(),
   };
+  const mockCacheManager = {
+    get: jest.fn().mockResolvedValue(undefined),
+    set: jest.fn().mockResolvedValue(undefined),
+    wrap: jest.fn((_key: string, loader: () => Promise<unknown>) => loader()),
+  };
 
   beforeEach(async () => {
     mockRepository.create.mockReset();
     mockRepository.save.mockReset();
     mockRepository.findAndCount.mockReset();
+    mockCacheManager.get.mockReset().mockResolvedValue(undefined);
+    mockCacheManager.set.mockReset().mockResolvedValue(undefined);
+    mockCacheManager.wrap
+      .mockReset()
+      .mockImplementation((_key: string, loader: () => Promise<unknown>) => loader());
 
     const moduleFixture: TestingModule = await Test.createTestingModule({
       controllers: [ClientsController],
@@ -28,6 +39,10 @@ describe('Clients (e2e)', () => {
         {
           provide: getRepositoryToken(Client),
           useValue: mockRepository,
+        },
+        {
+          provide: CACHE_MANAGER,
+          useValue: mockCacheManager,
         },
       ],
     }).compile();

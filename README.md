@@ -15,6 +15,7 @@ Repository: https://github.com/rebecagrn/data-form-app
 | [NestJS](https://nestjs.com/) | REST API, modules, dependency injection |
 | [TypeORM](https://typeorm.io/) | ORM and `Client` entity |
 | [PostgreSQL](https://www.postgresql.org/) | Database |
+| [Redis](https://redis.io/) | Cache for the client list |
 | [class-validator](https://github.com/typestack/class-validator) / [class-transformer](https://github.com/typestack/class-transformer) | DTO validation |
 | [Jest](https://jestjs.io/) + [Supertest](https://github.com/ladjs/supertest) | Unit and e2e tests |
 
@@ -37,7 +38,7 @@ Repository: https://github.com/rebecagrn/data-form-app
 
 | Technology | Role |
 |------------|------|
-| [Docker](https://www.docker.com/) + [Docker Compose](https://docs.docker.com/compose/) | Postgres, API, Web (nginx) |
+| [Docker](https://www.docker.com/) + [Docker Compose](https://docs.docker.com/compose/) | Postgres, Redis, API, Web (nginx) |
 | npm workspaces | Monorepo (`apps/api`, `apps/web`) |
 | [Biome](https://biomejs.dev/) | Lint, format, and import sorting (replaces ESLint + Prettier) |
 
@@ -66,13 +67,17 @@ A light SPA with HMR, TypeScript, and a dev proxy (`/api` → local API). In Doc
 
 `UNIQUE` constraints on `cpf` and `email` in Postgres; the API returns `409 Conflict` when the client already exists.
 
+### Redis cache
+
+`GET /api/clients` is cached in Redis for 60 seconds, keyed by page, limit, and a list version. A successful `POST /api/clients` bumps that version so stale pages are skipped. If Redis is unavailable, the API falls back to Postgres.
+
 ### Feedback with Sonner (toasts)
 
 Notifications in the top-right corner, without shifting the form layout — preferred over an inline Alert for submit actions.
 
 ### Docker
 
-- **Development:** only Postgres in Compose; API and Web run on the host with hot reload.
+- **Development:** Postgres and Redis in Compose; API and Web run on the host with hot reload.
 - **Local/demo production:** `docker compose` starts Postgres + API + Web (multi-stage build).
 
 ### Database — migrations
@@ -108,7 +113,7 @@ npm run migration:create -w @data-form/api -- src/database/migrations/ChangeName
 **Initial setup (dev):**
 
 ```bash
-docker compose up -d postgres
+docker compose up -d postgres redis
 npm run db:migrate
 npm run dev:api
 ```
@@ -126,6 +131,7 @@ data-form-app/
 ├── apps/
 │   ├── api/
 │   │   ├── src/
+│   │   │   ├── cache/            # Redis cache module
 │   │   │   ├── clients/          # Registration module
 │   │   │   ├── common/           # Validators (CPF)
 │   │   │   ├── database/         # DataSource and migrations
@@ -172,7 +178,7 @@ cp apps/web/.env.example apps/web/.env
 
 | File | Main variables |
 |------|----------------|
-| `apps/api/.env` | `DATABASE_*`, `PORT`, `CORS_ORIGIN`, `TYPEORM_SYNCHRONIZE`, `TYPEORM_MIGRATIONS_RUN` (see [Database — migrations](#database--migrations)) |
+| `apps/api/.env` | `DATABASE_*`, `PORT`, `CORS_ORIGIN`, `REDIS_URL`, `TYPEORM_SYNCHRONIZE`, `TYPEORM_MIGRATIONS_RUN` (see [Database — migrations](#database--migrations)) |
 | `apps/web/.env` | `VITE_API_URL` (dev: `http://localhost:3000/api`) |
 
 ---
@@ -181,10 +187,10 @@ cp apps/web/.env.example apps/web/.env
 
 ### Option A — Local development (recommended for coding)
 
-1. Start Postgres only:
+1. Start Postgres and Redis:
 
 ```bash
-docker compose up -d postgres
+docker compose up -d postgres redis
 ```
 
 2. Start API and Web:

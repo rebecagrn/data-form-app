@@ -18,6 +18,18 @@ services:
       timeout: 5s
       retries: 5
 
+  redis:
+    image: redis:7-alpine
+    container_name: data-form-redis
+    restart: unless-stopped
+    ports:
+      - '6379:6379'
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
   api:
     build:
       context: .
@@ -35,10 +47,13 @@ services:
       DATABASE_PASSWORD: dataform
       DATABASE_NAME: dataform
       CORS_ORIGIN: http://localhost:8080
+      REDIS_URL: redis://redis:6379
     ports:
       - '3000:3000'
     depends_on:
       postgres:
+        condition: service_healthy
+      redis:
         condition: service_healthy
 
   web:

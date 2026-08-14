@@ -8,7 +8,7 @@ import { Client } from './entities/client.entity';
 
 describe('ClientsService', () => {
   let service: ClientsService;
-  let repository: jest.Mocked<Pick<Repository<Client>, 'create' | 'save'>>;
+  let repository: jest.Mocked<Pick<Repository<Client>, 'create' | 'save' | 'findAndCount'>>;
 
   const inputDto: CreateClientDto = {
     fullName: 'John Doe',
@@ -32,6 +32,7 @@ describe('ClientsService', () => {
     repository = {
       create: jest.fn().mockReturnValue(savedClient),
       save: jest.fn().mockResolvedValue(savedClient),
+      findAndCount: jest.fn().mockResolvedValue([[], 0]),
     };
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -56,6 +57,37 @@ describe('ClientsService', () => {
     });
     expect(actual.id).toBe(savedClient.id);
     expect(actual.cpf).toBe(inputDto.cpf);
+  });
+
+  it('should list clients with pagination and masked CPF', async () => {
+    repository.findAndCount.mockResolvedValueOnce([[savedClient], 1]);
+    const actual = await service.findAll({ page: 2, limit: 10 });
+    expect(repository.findAndCount).toHaveBeenCalledWith({
+      order: { createdAt: 'DESC' },
+      skip: 10,
+      take: 10,
+    });
+    expect(actual.total).toBe(1);
+    expect(actual.page).toBe(2);
+    expect(actual.limit).toBe(10);
+    expect(actual.items).toHaveLength(1);
+    expect(actual.items[0].cpf).toBe('***.***.***-25');
+    expect(actual.items[0].fullName).toBe(savedClient.fullName);
+  });
+
+  it('should return an empty page when there are no clients', async () => {
+    const actual = await service.findAll({});
+    expect(repository.findAndCount).toHaveBeenCalledWith({
+      order: { createdAt: 'DESC' },
+      skip: 0,
+      take: 20,
+    });
+    expect(actual).toEqual({
+      items: [],
+      total: 0,
+      page: 1,
+      limit: 20,
+    });
   });
 
   it('should throw conflict when CPF or email already exists', async () => {

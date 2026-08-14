@@ -27,7 +27,7 @@ describe('Health (e2e)', () => {
     return request(app.getHttpServer()).get('/api').expect(200).expect({
       name: 'data-form-api',
       health: '/api/health',
-      clients: 'POST /api/clients',
+      clients: 'GET /api/clients, POST /api/clients',
     });
   });
 

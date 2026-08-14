@@ -6,7 +6,7 @@ export class AppService {
     return {
       name: 'data-form-api',
       health: '/api/health',
-      clients: 'POST /api/clients',
+      clients: 'GET /api/clients, POST /api/clients',
     };
   }
 

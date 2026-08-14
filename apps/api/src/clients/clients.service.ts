@@ -1,8 +1,11 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { QueryFailedError, type Repository } from 'typeorm';
+import { CLIENTS_PAGINATION } from './clients.constants';
+import { ClientListResponseDto } from './dto/client-list-response.dto';
 import { ClientResponseDto } from './dto/client-response.dto';
 import type { CreateClientDto } from './dto/create-client.dto';
+import type { ListClientsQueryDto } from './dto/list-clients-query.dto';
 import { Client } from './entities/client.entity';
 
 const POSTGRES_UNIQUE_VIOLATION = '23505';
@@ -14,6 +17,17 @@ export class ClientsService {
     @InjectRepository(Client)
     private readonly clientsRepository: Repository<Client>,
   ) {}
+
+  async findAll(query: ListClientsQueryDto): Promise<ClientListResponseDto> {
+    const page = query.page ?? CLIENTS_PAGINATION.DEFAULT_PAGE;
+    const limit = query.limit ?? CLIENTS_PAGINATION.DEFAULT_LIMIT;
+    const [clients, total] = await this.clientsRepository.findAndCount({
+      order: { createdAt: 'DESC' },
+      skip: (page - 1) * limit,
+      take: limit,
+    });
+    return ClientListResponseDto.fromFindResult({ clients, total, page, limit });
+  }
 
   async create(dto: CreateClientDto): Promise<ClientResponseDto> {
     const client = this.clientsRepository.create({

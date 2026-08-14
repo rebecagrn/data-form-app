@@ -18,7 +18,7 @@ describe('AppController', () => {
     expect(appController.getRoot()).toEqual({
       name: 'data-form-api',
       health: '/api/health',
-      clients: 'POST /api/clients',
+      clients: 'GET /api/clients, POST /api/clients',
     });
   });
 

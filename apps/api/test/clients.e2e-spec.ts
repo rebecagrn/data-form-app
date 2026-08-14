@@ -13,11 +13,13 @@ describe('Clients (e2e)', () => {
   const mockRepository = {
     create: jest.fn(),
     save: jest.fn(),
+    findAndCount: jest.fn(),
   };
 
   beforeEach(async () => {
     mockRepository.create.mockReset();
     mockRepository.save.mockReset();
+    mockRepository.findAndCount.mockReset();
 
     const moduleFixture: TestingModule = await Test.createTestingModule({
       controllers: [ClientsController],
@@ -37,6 +39,7 @@ describe('Clients (e2e)', () => {
         whitelist: true,
         transform: true,
         forbidNonWhitelisted: true,
+        transformOptions: { enableImplicitConversion: true },
       }),
     );
     await app.init();
@@ -46,6 +49,35 @@ describe('Clients (e2e)', () => {
     if (app) {
       await app.close();
     }
+  });
+
+  it('GET /api/clients should list clients with masked CPF', () => {
+    const savedClient: Client = {
+      id: 'uuid-1',
+      fullName: 'John Doe',
+      cpf: '52998224725',
+      email: 'john@example.com',
+      favoriteColor: 'blue',
+      notes: 'First client',
+      createdAt: new Date('2026-05-26T00:00:00.000Z'),
+    };
+    mockRepository.findAndCount.mockResolvedValue([[savedClient], 1]);
+
+    return request(app.getHttpServer())
+      .get('/api/clients')
+      .expect(200)
+      .expect((response) => {
+        expect(response.body.total).toBe(1);
+        expect(response.body.page).toBe(1);
+        expect(response.body.limit).toBe(20);
+        expect(response.body.items).toHaveLength(1);
+        expect(response.body.items[0].cpf).toBe('***.***.***-25');
+        expect(response.body.items[0].email).toBe('john@example.com');
+      });
+  });
+
+  it('GET /api/clients should return 400 for invalid pagination', () => {
+    return request(app.getHttpServer()).get('/api/clients?page=0&limit=100').expect(400);
   });
 
   it('POST /api/clients should create a client', () => {

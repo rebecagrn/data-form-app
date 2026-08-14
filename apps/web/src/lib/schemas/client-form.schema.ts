@@ -29,3 +29,10 @@ export type ClientResponse = {
   notes: string | null
   createdAt: string
 }
+
+export type ClientListResponse = {
+  items: ClientResponse[]
+  total: number
+  page: number
+  limit: number
+}

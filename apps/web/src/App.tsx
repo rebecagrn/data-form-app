@@ -1,4 +1,4 @@
-import { ClientRegistrationForm } from '@/components/client-registration-form'
+import { ClientsWorkspace } from '@/components/clients-workspace'
 import { ThemeToggle } from '@/components/theme-toggle'
 
 function App() {
@@ -17,11 +17,11 @@ function App() {
         aria-hidden
       />
 
-      <main className="relative flex min-h-svh flex-col items-center justify-center px-4 py-10 sm:px-6">
+      <main className="relative flex min-h-svh flex-col items-center px-4 py-10 sm:px-6">
         <div className="absolute top-4 right-4 sm:top-6 sm:right-6">
           <ThemeToggle />
         </div>
-        <ClientRegistrationForm />
+        <ClientsWorkspace />
       </main>
 
       <footer className="text-muted-foreground pb-6 text-center text-xs">Data Form App</footer>
